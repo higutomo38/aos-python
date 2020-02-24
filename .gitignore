@@ -1,0 +1,9 @@
+# Diectory
+/library/__pycache__
+/library/nos_config
+
+# File
+hostname_label.csv
+system_relationship.csv
+
+get_graphqe_relation.py

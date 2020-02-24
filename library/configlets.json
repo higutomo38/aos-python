@@ -1,0 +1,17 @@
+{
+  "configlet": {
+    "display_name": "Interface DownUP",
+    "generators": [
+      {
+        "config_style": "cumulus",
+        "section": "interface",
+        "section_condition": "",
+        "filename": "",
+        "template_text": "link down",
+        "negation_template_text": "link down"
+      }
+    ]
+  },
+  "condition": "",
+  "label": "Interface DownUP"
+}
