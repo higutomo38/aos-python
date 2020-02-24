@@ -6,14 +6,11 @@ Python modules used to interact with Apstra AOS.
 
 Clone repo into your aos project.
 
-<div class="bg-blue-light mb-2">
-  .git clone https://github.com/higutomo38/aos.git
+git clone https://github.com/higutomo38/aos.git
+
+<div class="bg-green-light mb-2">
+  .text-gray-dark on .bg-green-light
 </div>
-
-#f6f8fa, $bg-gray, git clone https://github.com/higutomo38/aos.git
-
-
-
 
 
 
