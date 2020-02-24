@@ -8,9 +8,12 @@ Clone repo into your aos project.
 
 git clone https://github.com/higutomo38/aos.git
 
-<div class="bg-green-light mb-2">
-  .text-gray-dark on .bg-green-light
-</div>
+Install Python 3.X on you local. Some modules may not work on 2.X.
+
+tomo-2:library tomoyuki$ python --version
+Python 3.6.6
+
+
 
 
 
