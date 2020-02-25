@@ -42,7 +42,7 @@ blue_name = 'bp_name'
 | Closed-Loop | configlets_linkdown_linkflap.py | Push ifdown configlets triggered by linkflap IBA anomaly | Cumulus |
 
 ## **Blueprint**
-### **Change Hostnames (Spine, Leaf and Server)**
+### **Change Hostname (Spine, Leaf and Server)**
 Before hostnames modified, you need to get current hostname list as CSV. Run 'get_hostname.py' and then you can see 'hostname_label.csv' on same directory you executed the script.
 
 ex.'hostname_label.csv'<br>
@@ -57,9 +57,13 @@ Run 'patch_hostname.py'.<br>
 Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br> 
 
 
-### **Change labels (Spine, Leaf and Server)**
+### **Change label (Spine, Leaf and Server)**
 The procedure is same as hostname. Add new labels in 'new_hostname or label' row and save the CSV.<br> 
 Run 'patch_label.py'<br> 
+
+### **Save NOS config on local (Spine and Leaf)**
+All rendered NOS configuration got saved on local directory you executed the script. Create 'nos_config' directory automatically and the configs are in it.<br> 
+Run 'get_nos_config.py'<br> 
 
 
 ## **Closed-Loop**
