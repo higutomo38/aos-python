@@ -42,7 +42,8 @@ blue_name = 'bp_name'
 | Closed-Loop | configlets_linkdown_linkflap.py | Push ifdown configlets triggered by linkflap IBA anomaly | Cumulus |
 
 ## **Blueprint**
-
+### **Change all Hostnames**
+### **Change all labels**
 
 hostname_label.csv
 
