@@ -15,21 +15,21 @@ Install Python 3.X on you local. Need some python modules in addition to default
 pip install requests urllib3
 ```
 
-## **Installation**
-
 Modify 'common.py' according to your env. 
 
-uname: AOS login username
-passw: AOS login password
-ahost: AOS IP address or Name
+uname: AOS login username<br>
+passw: AOS login password<br>
+ahost: AOS IP address or Name<br>
 blue_name: Blueprint Name
 
-e.g.
+e.g.<br>
 '''
---- entry ---
-uname = 'admin'
-passw = 'hogefuga'
-ahost = 'aos_server.com'
+--- entry ---<br>
+uname = 'admin'<br>
+passw = 'hogefuga'<br>
+ahost = 'aos_server.com'<br>
 blue_name = 'bp_name'
 '''
+
+## **Installation**
 
