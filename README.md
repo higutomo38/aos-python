@@ -72,9 +72,11 @@ AOS setting
 1. Set IBA Interface Flapping with raising anomaly on 'device interface flappinng' processor.
 2. Create syslog config and turn on 'Forward Anomalies'.
 3. Create new configlet<br>
-   Comfig Style : Cumulus,<br>
-   Section : INTERFACE,<br>
-   Template Text : link down<br>
-   
+   - Comfig Style : Cumulus<br>
+   - Section : INTERFACE<br>
+   - Template Text : link down<br>
+
+Syslog Server Setting
+4. 
 
 
