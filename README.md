@@ -42,10 +42,15 @@ blue_name = 'bp_name'
 | Closed-Loop | configlets_linkdown_linkflap.py | Push ifdown configlets triggered by linkflap IBA anomaly | Cumulus |
 
 ## **Blueprint**
-### **Change all Hostnames**
-### **Change all labels**
+### **Change all Hostnames (Spine, Leaf and server)**
+Before hostnames modified, you need to get current hostname list as CSV. Run 'get_hostname.py' and then you can see 'hostname_label.csv' on same directory you executed the script.
 
-hostname_label.csv
+
+
+
+### **Change all labels (Spine, Leaf and server)**
+
+
 
 ## **Closed-Loop**
 
