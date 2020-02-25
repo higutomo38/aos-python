@@ -39,7 +39,7 @@ blue_name = 'bp_name'
 |  | patch_hostname.py | Change hostnames listed in CSV | All |
 |  | patch_label.py | Change labels listed in CSV | All |
 |  | get_nos_config.py | Save all NOS configurations on local | Cumulus, EOS |
-| Closed-Loop | configlets_linkdown_linkflap.py | Push ifdown configlets triggered by linkflap IBA anomaly | Cumulus |
+| Closed-Loop | configlets_linkdown_linkflap.py | Push ifdown configlets triggered by IBA linkflap anomaly | Cumulus |
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
@@ -61,13 +61,16 @@ Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br>
 The procedure is same as hostname. Add new labels in 'new_hostname or label' row and save the CSV.<br> 
 Run 'patch_label.py'<br> 
 
-### **Save NOS configs on local (Spine and Leaf)**
+### **Save all NOS configs on local (Spine and Leaf)**
 All rendered NOS configuration got saved on local. Create 'nos_config' directory automatically and the configs are in it.<br> 
-Run 'get_nos_config.py'<br><br> 
-
+Run 'get_nos_config.py'<br>
 
 ## **Closed-Loop**
+### **Push ifdown configlets triggered by IBA linkflap anomaly**
 
+AOS setting
+1. Set IBA Interface Flapping with raising anomaly on 'device interface flappinng' processor.
+2. Create syslog config and turn on 'Forward Anomalies'.
 
 
 
