@@ -24,7 +24,7 @@ blue_name: Blueprint Name
 
 e.g.<br>
 ```
---- entry ---<br>
+#--- entry ---
 uname = 'admin'
 passw = 'hogefuga'
 ahost = 'aos_server.com'
@@ -36,13 +36,13 @@ blue_name = 'bp_name'
 | Category | Module | Description | NOS |
 | --- | --- | --- | --- |
 | Blueprint | get_hostname.py | Create new CSV file hostnames listed | All |
-|  | patch_hostname.py | Change all hostnames listed in CSV | All |
-|  | patch_label.py | Change all labels listed in CSV | All |
+|  | patch_hostname.py | Change hostnames listed in CSV | All |
+|  | patch_label.py | Change labels listed in CSV | All |
 |  | get_nos_config.py | Save all NOS configurations on local | Cumulus, EOS |
 | Closed-Loop | configlets_linkdown_linkflap.py | Push ifdown configlets triggered by linkflap IBA anomaly | Cumulus |
 
 ## **Blueprint**
-### **Change all Hostnames (Spine, Leaf and Server)**
+### **Change Hostnames (Spine, Leaf and Server)**
 Before hostnames modified, you need to get current hostname list as CSV. Run 'get_hostname.py' and then you can see 'hostname_label.csv' on same directory you executed the script.
 
 ex.'hostname_label.csv'<br>
@@ -54,12 +54,12 @@ ex.'hostname_label.csv'<br>
 <img src="https://user-images.githubusercontent.com/21299310/75225362-cf990880-57ed-11ea-9849-f71f4fea706e.png" width="640px">
 
 Run 'patch_hostname.py'.<br> 
-Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.
+Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br> 
 
 
-
-### **Change all labels (Spine, Leaf and Server)**
-
+### **Change labels (Spine, Leaf and Server)**
+The procedure is same as hostname. Add new labels in 'new_hostname or label' row and save the CSV.<br> 
+Run 'patch_label.py'<br> 
 
 
 ## **Closed-Loop**
