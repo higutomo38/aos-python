@@ -45,6 +45,7 @@ blue_name = 'bp_name'
 ### **Change all Hostnames (Spine, Leaf and server)**
 Before hostnames modified, you need to get current hostname list as CSV. Run 'get_hostname.py' and then you can see 'hostname_label.csv' on same directory you executed the script.
 
+ex.'get_hostname.py'
 <img src="https://user-images.githubusercontent.com/21299310/75221479-48479700-57e5-11ea-8af9-2b167fc1815d.png" width="640px">
 
 
