@@ -53,8 +53,9 @@ Add new hostnames in 'new_hostname or label' row and save the CSV.
 ex.'hostname_label.csv'<br>
 <img src="https://user-images.githubusercontent.com/21299310/75225362-cf990880-57ed-11ea-9849-f71f4fea706e.png" width="640px">
 
-Run 'patch_hostname.py'. 
+Run 'patch_hostname.py'.<br> 
 Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.
+
 
 
 ### **Change all labels (Spine, Leaf and server)**
