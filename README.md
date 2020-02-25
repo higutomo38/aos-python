@@ -45,7 +45,7 @@ blue_name = 'bp_name'
 ### **Change all Hostnames (Spine, Leaf and server)**
 Before hostnames modified, you need to get current hostname list as CSV. Run 'get_hostname.py' and then you can see 'hostname_label.csv' on same directory you executed the script.
 
-
+![hostnamelist](/Users/tomoyuki/Desktop/mac/python/aos/image/hostnamelist.png) 
 
 
 ### **Change all labels (Spine, Leaf and server)**
