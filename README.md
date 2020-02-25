@@ -35,11 +35,11 @@ blue_name = 'bp_name'
 
 | Category | Module | Description | NOS |
 | --- | --- | --- | --- |
-| Blueprint | get_hostname.py | Create new CSV file hostname listed | All |
-|  | patch_hostname.py |  | All |
-|  | patch_label.py |  | All |
-|  | get_nos_config.py |  | Cumulus, EOS |
-| Closed-Loop | configlets_linkdown_linkflap.py |  | Cumulus |
+| Blueprint | get_hostname.py | Create new CSV file hostnames listed | All |
+|  | patch_hostname.py | Change all hostnames listed in CSV | All |
+|  | patch_label.py |  | Change all labels listed in CSV |
+|  | get_nos_config.py | Save all NOS configurations on local | Cumulus, EOS |
+| Closed-Loop | configlets_linkdown_linkflap.py | Push ifdown configlets triggered by linkflap IBA anomaly | Cumulus |
 
 ### **Blueprint**
 
