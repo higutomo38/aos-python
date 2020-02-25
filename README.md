@@ -61,11 +61,11 @@ Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br>
 The procedure is same as hostname. Add new labels in 'new_hostname or label' row and save the CSV.<br> 
 Run 'patch_label.py'<br> 
 
-### **Save NOS config on local (Spine and Leaf)**
+### **Save NOS configs on local (Spine and Leaf)**
 All rendered NOS configuration got saved on local. Create 'nos_config' directory automatically and the configs are in it.<br> 
-Run 'get_nos_config.py'<br> 
+Run 'get_nos_config.py'<br><br> 
 
-<br>
+
 ## **Closed-Loop**
 
 
