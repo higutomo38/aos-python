@@ -11,7 +11,7 @@ import json
 # --- entry ---
 uname = 'admin'
 passw = 'aos aos'
-ahost = 'aos-clapstratomoyukihi-ifupq3zv.srv.ravcloud.com'
+ahost = 'aos-clapstratomoyukihi-s7udx5su.srv.ravcloud.com'
 blue_name = 'demo'
 hostname = 'leaf2-001'
 
@@ -87,7 +87,7 @@ def bp_graphqe_relationship(token, bp_id):
   payload={"query": "match(node('system', name='system_one').out('hosted_interfaces').node('interface', name='int_one').out('link').node('link').in_('link').node('interface', name='int_two').in_('hosted_interfaces').node('system', name='system_two')).ensure_different('int_one', 'int_two')"}
   resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
   return resp
-  
+
 ##ex.
 # get node id of system (switch, server)
 # ex.3590eec3-0b56-4b2f-90d6-e428d5d499e9

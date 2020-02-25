@@ -1,6 +1,6 @@
 {
   "configlet": {
-    "display_name": "Interface DownUP",
+    "display_name": "Cumulus Linkdown",
     "generators": [
       {
         "config_style": "cumulus",
@@ -13,5 +13,5 @@
     ]
   },
   "condition": "",
-  "label": "Interface DownUP"
+  "label": "Cumulus Linkdown"
 }
