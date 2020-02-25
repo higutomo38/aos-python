@@ -25,23 +25,26 @@ blue_name: Blueprint Name
 e.g.<br>
 ```
 --- entry ---<br>
-uname = 'admin'<br>
-passw = 'hogefuga'<br>
-ahost = 'aos_server.com'<br>
+uname = 'admin'
+passw = 'hogefuga'
+ahost = 'aos_server.com'
 blue_name = 'bp_name'
 ```
 
 ## **Module list**
 
-| Module | Catergory | Description | NOS |
+| Category | Module | Description | NOS |
 | --- | --- | --- | --- |
+| Blueprint | get_hostname.py | Create new CSV file hostname listed | All |
+|  | patch_hostname.py |  | All |
+|  | patch_label.py |  | All |
+|  | get_nos_config.py |  | Cumulus, EOS |
+| Closed-Loop | configlets_linkdown_linkflap.py |  | Cumulus |
+
+### **Blueprint**
 
 
-### **System Setting**
-get_hostname.py
-get_nos_config.py
-patch_label.py
-patch_hostname.py
+hostname_label.csv
 
 ### **Operation**
 
