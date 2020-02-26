@@ -77,9 +77,10 @@ Run 'get_nos_config.py'<br>
 2. Turn on syslog service.<br>
 3. Copy three files.<br>
    - common.py
+     * Use '172.16.90.3' for 'ahost' if you test on Apstra Cloudlab.
    - configlets.json
    - configlets_intdown_flap.py<br>
-     Note: Comment out two lines here if you use Apstra Cloudlab as syslog server.<br>
+     * Comment out two lines here if you use Apstra Cloudlab as syslog server.<br>
      ```
      #from requests.packages.urllib3.exceptions import InsecureRequestWarning
      #requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
