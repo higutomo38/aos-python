@@ -1,4 +1,4 @@
-# **AOS Python Modules**
+# **AOS Python Library**
 
 Python modules used to interact with Apstra AOS.
 
