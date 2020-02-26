@@ -94,4 +94,4 @@ Run 'get_nos_config.py'<br>
    * *     * * *   root    for i in `seq 0 20 59`;do (sleep ${i}; python /home/admin/configlets_intdown_flap.py) & done;
    service cron restart
    ```
-   
+5. Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.
