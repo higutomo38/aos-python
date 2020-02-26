@@ -77,14 +77,16 @@ Run 'get_nos_config.py'<br>
 2. Turn on syslog service.<br>
 3. Copy three files.<br>
    - common.py
-     * Use '172.16.90.3' for 'ahost' if you test on Apstra Cloudlab.
    - configlets.json
    - configlets_intdown_flap.py<br>
-     * Comment out two lines here if you use Apstra Cloudlab as syslog server.<br>
+   if you use Apstra Cloudlab as syslog server,<br>
+   Disable urllib3 in 'common.py' and 'configlets_intdown_flap.py'<br>
      ```
      #from requests.packages.urllib3.exceptions import InsecureRequestWarning
      #requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
      ```
+   Use '172.16.90.3' for 'ahost' if you test on Apstra Cloudlab.<br>
+
 4. Set crontab to run 'configlets_intdown_flap.py' periodically. The script search the flap anomaly in syslog file and then push interface down configlets to the node/interface are identical with the log.<br>
    ex. <br>
    ```
@@ -94,4 +96,4 @@ Run 'get_nos_config.py'<br>
    * *     * * *   root    for i in `seq 0 20 59`;do (sleep ${i}; python /home/admin/configlets_intdown_flap.py) & done;
    service cron restart
    ```
-5. Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.
+5. Check 'Logical Diff' tab in 'uncommited' on AOS and then push 'commit'.
