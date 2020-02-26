@@ -68,17 +68,17 @@ Run 'get_nos_config.py'<br>
 ## **Closed-Loop**
 ### **Push ifdown configlets triggered by IBA linkflap anomaly**
 
-AOS Setting
+#### **AOS Setting**
 1. Set IBA Interface Flapping with raising anomaly on 'device interface flappinng' processor.
 2. Create syslog config and turn on 'Forward Anomalies'.
 
-Syslog Server Setting<br>
+#### **Syslog Server Setting**<br>
 3. Install python and libraries as above.
 4. Turn on syslog service.<br>
 5. Copy three files.<br>
    - common.py
    - configlets.json
-   - configlets_linkdown_linkflap.py
+   - configlets_linkdown_linkflap.py<br>
      Note: Comment out two lines here if you use Apstra Cloudlab as syslog server.<br>
      ```
      from requests.packages.urllib3.exceptions import InsecureRequestWarning
