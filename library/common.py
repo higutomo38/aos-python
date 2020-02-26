@@ -9,8 +9,8 @@ import json
 
 # --- entry ---
 uname = 'admin'
-passw = 'aos aos'
-ahost = 'aos-clapstratomoyukihi-s7udx5su.srv.ravcloud.com'
+passw = 'hogefuga'
+ahost = 'aos.com'
 blue_name = 'demo'
 hostname = 'leaf2-001'
 
