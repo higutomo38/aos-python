@@ -39,7 +39,7 @@ blue_name = 'bp_name'
 |  | patch_hostname.py | Change hostnames listed in CSV | All |
 |  | patch_label.py | Change labels listed in CSV | All |
 |  | get_nos_config.py | Save all NOS configurations on local | Cumulus, EOS |
-| Closed-Loop | configlets_linkdown_linkflap.py | Push ifdown configlets triggered by IBA linkflap anomaly | Cumulus |
+| Closed-Loop | configlets_intdown_flap.py | Push ifdown configlets triggered by IBA interface flap anomaly | Cumulus |
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
@@ -66,21 +66,30 @@ All rendered NOS configuration got saved on local. Create 'nos_config' directory
 Run 'get_nos_config.py'<br>
 
 ## **Closed-Loop**
-### **Push ifdown configlets triggered by IBA linkflap anomaly**
+### **Push ifdown configlets triggered by IBA interface flap anomaly**
 
 #### **AOS Setting**
 1. Set IBA Interface Flapping with raising anomaly on 'device interface flappinng' processor.
 2. Create syslog config and turn on 'Forward Anomalies'.
 
 #### **Syslog Server Setting**<br>
-3. Install python and libraries as above.
-4. Turn on syslog service.<br>
-5. Copy three files.<br>
+1. Install python and libraries as above.
+2. Turn on syslog service.<br>
+3. Copy three files.<br>
    - common.py
    - configlets.json
-   - configlets_linkdown_linkflap.py<br>
+   - configlets_intdown_flap.py<br>
      Note: Comment out two lines here if you use Apstra Cloudlab as syslog server.<br>
      ```
-     from requests.packages.urllib3.exceptions import InsecureRequestWarning
-     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+     #from requests.packages.urllib3.exceptions import InsecureRequestWarning
+     #requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
      ```
+4. Set crontab to run 'configlets_intdown_flap.py' periodically. The script search the flap anomaly in syslog file and then push interface down configlets to the node/interface are identical with the log.<br>
+   ex. <br>
+   ```
+   cp /etc/crontab /etc/cron.d/test_cron
+   Add new line here.
+   * *     * * *   root    for i in `seq 0 20 59`;do (sleep ${i}; python /home/admin/configlets_intdown_flap.py) & done;
+   service cron restart
+   ```
+   
