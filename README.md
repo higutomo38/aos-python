@@ -79,9 +79,9 @@ Run 'get_nos_config.py'<br>
    - common.py
    - configlets.json
    - configlets_intdown_flap.py<br>
-   if you use Apstra Cloudlab as syslog server,<br>
-     - Use '172.16.90.3' for 'ahost'<br>
-     - Disable urllib3 in 'common.py' and 'configlets_intdown_flap.py'<br>
+   if your test env is on Apstra Cloudlab<br>
+   - Use '172.16.90.3' for 'ahost'<br>
+   - Disable urllib3 in 'common.py' and 'configlets_intdown_flap.py'<br>
      ```
      #from requests.packages.urllib3.exceptions import InsecureRequestWarning
      #requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
