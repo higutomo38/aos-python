@@ -80,12 +80,12 @@ Run 'get_nos_config.py'<br>
    - configlets.json
    - configlets_intdown_flap.py<br>
    if you use Apstra Cloudlab as syslog server,<br>
-   Disable urllib3 in 'common.py' and 'configlets_intdown_flap.py'<br>
+     - Use '172.16.90.3' for 'ahost'<br>
+     - Disable urllib3 in 'common.py' and 'configlets_intdown_flap.py'<br>
      ```
      #from requests.packages.urllib3.exceptions import InsecureRequestWarning
      #requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
      ```
-   Use '172.16.90.3' for 'ahost' if you test on Apstra Cloudlab.<br>
 
 4. Set crontab to run 'configlets_intdown_flap.py' periodically. The script search the flap anomaly in syslog file and then push interface down configlets to the node/interface are identical with the log.<br>
    ex. <br>
