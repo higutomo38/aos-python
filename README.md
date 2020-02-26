@@ -78,7 +78,7 @@ Run 'get_nos_config.py'<br>
 3. Copy three files.<br>
    - common.py
    - configlets.json
-   - configlets_intdown_flap.py<br>
+   - configlets_intdown_flap.py
 if your test env is on Apstra Cloudlab<br>
    - ahost='172.16.90.3' in 'common.py'<br>
    - Disable urllib3 in 'common.py' and 'configlets_intdown_flap.py'<br>
