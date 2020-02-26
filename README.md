@@ -35,7 +35,7 @@ blue_name = 'bp_name'
 
 | Category | Module | Description | NOS |
 | --- | --- | --- | --- |
-| Blueprint | get_hostname.py | Create new CSV file hostnames listed | All |
+| Blueprint | get_hostname.py | Create new CSV file lists hostnames | All |
 |  | patch_hostname.py | Change hostnames listed in CSV | All |
 |  | patch_label.py | Change labels listed in CSV | All |
 |  | get_nos_config.py | Save all NOS configurations on local | Cumulus, EOS |
