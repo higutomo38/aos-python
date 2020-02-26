@@ -39,7 +39,7 @@ blue_name = 'bp_name'
 |  | patch_hostname.py | Change hostnames listed in CSV | All |
 |  | patch_label.py | Change labels listed in CSV | All |
 |  | get_nos_config.py | Save all NOS configurations on local | Cumulus, EOS |
-| Closed-Loop | configlets_intdown_flap.py | Push ifdown configlets triggered by IBA interface flap anomaly | Cumulus |
+| Closed-Loop | configlets_intdown_flap.py | Push interface down configlets triggered by IBA interface flap anomaly | Cumulus |
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
