@@ -62,7 +62,7 @@ The procedure is same as hostname. Add new labels in 'new_hostname or label' row
 Run 'patch_label.py'<br> 
 
 ### **Save all NOS configs on local (Spine and Leaf)**
-All rendered NOS configuration got saved on local. Create 'nos_config' directory automatically and the configs are in it.<br> 
+All rendered NOS configurations got saved on local. Create 'nos_config' directory automatically and the configs are in it.<br> 
 Run 'get_nos_config.py'<br>
 
 ## **Closed-Loop**
