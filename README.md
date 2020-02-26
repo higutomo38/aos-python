@@ -89,7 +89,8 @@ Run 'get_nos_config.py'<br>
    ex. <br>
    ```
    cp /etc/crontab /etc/cron.d/test_cron
-   Add new line here.
+   #/etc/cron.d/test_cron
+   #Add new line here.
    * *     * * *   root    for i in `seq 0 20 59`;do (sleep ${i}; python /home/admin/configlets_intdown_flap.py) & done;
    service cron restart
    ```
