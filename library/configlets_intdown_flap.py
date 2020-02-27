@@ -7,13 +7,6 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import json
 import ast
 
-ahost = common.ahost
-l = common.blueprint()
-token = l[0]
-bp_id = l[1]
-bp_node_list_system = common.bp_node_list_system(token, bp_id)
-bp_diff = common.bp_diff(token, bp_id)
-
 # Check syslog messages of IBA interface flapping
 def check_syslog():
   f = open('/var/log/syslog','r')
@@ -32,26 +25,40 @@ def check_syslog():
           list.insert(0,j['value'].replace('"',''))
         elif j['key'] == 'key':
           list.append(j['value'].replace('"',''))
-      return list
+      return list # [system id, interface number]
       sys.exit()
   sys.exit()
 
+list = check_syslog()
+
+ahost = common.ahost
+l = common.blueprint()
+token = l[0]
+bp_id = l[1]
+bp_node_list_system = common.bp_node_list_system(token, bp_id)
+bp_diff = common.bp_diff(token, bp_id)
+configlets_dic = common.bp_configlets(token, bp_id)
+
 # get node id from system id
 def node_id_from_system_id():
-  list = check_syslog()
   for i in bp_node_list_system.values():
     if i["system_id"] == list[0]:
-      return i["id"], list[1]
+      return i["id"], list[1] # (node id, interface number)
 
 # post configlets
 def configlets():
-  list = node_id_from_system_id()
-  d = open('/home/admin/configlets.json','r')
+  tupl = node_id_from_system_id()
+  # Check whether adding configlets already exist in current BP or not.
+  for i in configlets_dic['items']:
+    if tupl[0] in i['condition'] and tupl[1] in i['configlet']['generators'][0]['section_condition']:
+      sys.exit()
+  d = open('configlets.json','r')
   f = json.load(d)
   d.close()
+  # Check whether uncommited configlets is in BP.
   if bp_diff['configlet'] == None:
-    f['configlet']['generators'][0]['section_condition'] = "name in [\"" + list[1] + "\"]"
-    f['condition'] = "id in [\"" + list[0] + "\"]"
+    f['configlet']['generators'][0]['section_condition'] = "name in [\"" + tupl[1] + "\"]"
+    f['condition'] = "id in [\"" + tupl[0] + "\"]"
     ep = 'https://' + ahost + '/api/blueprints/{0}/configlets'.format(bp_id)
     requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(f), verify=False)
   else:

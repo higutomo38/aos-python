@@ -9,8 +9,8 @@ import json
 
 # --- entry ---
 uname = 'admin'
-passw = 'hogefuga'
-ahost = 'aos.com'
+passw = 'aos aos'
+ahost = '172.16.90.3'
 blue_name = 'demo'
 hostname = 'leaf2-001'
 
@@ -80,6 +80,12 @@ def bp_diff(token, bp_id):
   resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
   return resp
 
+# get configlets
+def bp_configlets(token, bp_id):
+  ep = 'https://' + ahost + '/api/blueprints/{0}/configlets'.format(bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
 # get graphqe relationship (switch, server, er)
 def bp_graphqe_relationship(token, bp_id):
   ep = 'https://' + ahost + '/api/blueprints/{0}/qe'.format(bp_id)
@@ -87,7 +93,6 @@ def bp_graphqe_relationship(token, bp_id):
   resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
   return resp
 
-##ex.
 # get node id of system (switch, server)
 # ex.3590eec3-0b56-4b2f-90d6-e428d5d499e9
 
@@ -102,5 +107,8 @@ def bp_graphqe_relationship(token, bp_id):
 
 # get diff
 #{u'external_endpoint': None, u'internal_endpoint': None, u'external_endpoints_group': None, u'enforcement_points_group': None, u'internal_endpoints_group': None, u'configlet': {u'removed': {}, u'added': {u'acb6bc1c-01fa-4795-a2e5-829926774933': {u'label': u'Interface DownUP'}}, u'changed': {}}, u'security_zone': None, u'policy': None, u'virtual_network': None, u'virtual_infra': None, u'digest': {u'node': {u'removed': 0, u'added': 1, u'changed': 0}, u'relationship': {u'removed': 0, u'added': 0, u'changed': 0}}}
+
+# get configlets
+#{u'items': [{u'configlet': {u'generators': [{u'config_style': u'cumulus', u'section': u'interface', u'section_condition': u'name in ["swp5"]', u'filename': u'', u'template_text': u'link down', u'negation_template_text': u''}], u'display_name': u'Cumulus Linkdown'}, u'id': u'52791a4a-82d7-4f79-b661-29bae191c544', u'condition': u'id in ["c2cb6cd7-ed3d-47c7-889b-903ff1698e64"]', u'label': u'Cumulus Linkdown'}]}
 
 # get graphqe relationship (switch, server, er)
