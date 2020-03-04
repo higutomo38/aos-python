@@ -10,11 +10,40 @@ import json
 # --- entry ---
 uname = 'admin'
 passw = 'aos aos'
-ahost = '172.16.90.3'
+ahost = 'aos.com'
 blue_name = 'demo'
 hostname = 'leaf2-001'
 
 # --- exec ---
+# get racks
+def bp_racks_get(token, bp_id):
+  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/racks'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+# get cabling-map
+def bp_cabling_map_get(token, bp_id):
+  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/cabling-map'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+ # get nodes interface
+def bp_nodes_interface_get(token, bp_id):
+  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/nodes?node_type=interface'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+ # get nodes
+def bp_nodes_system_get(token, bp_id):
+  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/nodes?node_type=system'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+
+
+
+
+
 # aos login
 def login():
   ep = 'https://' + ahost + '/api/user/login'

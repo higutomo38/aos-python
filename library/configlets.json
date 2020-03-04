@@ -4,11 +4,11 @@
     "generators": [
       {
         "config_style": "cumulus",
-        "section": "interface",
+        "section": "system",
         "section_condition": "",
         "filename": "",
-        "template_text": "link down",
-        "negation_template_text": "link down"
+        "template_text": "ifdown x --admin-state",
+        "negation_template_text": "ifup x"
       }
     ]
   },

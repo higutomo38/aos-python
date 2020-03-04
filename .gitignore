@@ -3,7 +3,10 @@
 /library/nos_config
 
 # File
+get_graphqe_relation.py
+get_parameter_sheet.py
 hostname_label.csv
+parameter.csv
+parameter.xlsx
 system_relationship.csv
 
-get_graphqe_relation.py

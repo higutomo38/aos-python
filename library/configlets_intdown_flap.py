@@ -57,7 +57,8 @@ def configlets():
   d.close()
   # Check whether uncommited configlets is in BP.
   if bp_diff['configlet'] == None:
-    f['configlet']['generators'][0]['section_condition'] = "name in [\"" + tupl[1] + "\"]"
+    f['configlet']['generators'][0]['template_text'] = f['configlet']['generators'][0]['template_text'].replace('x',tupl[1])
+    f['configlet']['generators'][0]['negation_template_text'] = f['configlet']['generators'][0]['negation_template_text'].replace('x',tupl[1])  
     f['condition'] = "id in [\"" + tupl[0] + "\"]"
     ep = 'https://' + ahost + '/api/blueprints/{0}/configlets'.format(bp_id)
     requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(f), verify=False)

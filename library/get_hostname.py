@@ -15,6 +15,5 @@ def get_hostname():
     for i in bp_node_list_system.values():
       if i['role'] == 'spine' or i['role'] == 'leaf' or i['system_type'] == 'server':
         writer.writerow([i['id'],i['role'],i['hostname']])
-        l = []
 
 get_hostname()
