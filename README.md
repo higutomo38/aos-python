@@ -40,8 +40,8 @@ blue_name = 'bp_name'
 | Blueprint | get_hostname.py | Create new CSV file lists hostnames | All |
 |  | patch_hostname.py | Change hostnames listed in CSV | All |
 |  | patch_label.py | Change labels listed in CSV | All |
-|  | get_nos_config.py | Save all NOS configuration on local | Cumulus, EOS |
-|  | get_config_sheet.py | Save blueprint configuration | Cumulus, EOS |
+|  | get_nos_config.py | Save NOS configuration on local | Cumulus, EOS |
+|  | get_ip_sheet.py | Save AOS database sheet tie to device IP | Cumulus, EOS |
 | Closed-Loop | configlets_intdown_flap.py | Push interface down configlets triggered by IBA interface flap anomaly | Cumulus |
 
 ## **Blueprint**
@@ -64,9 +64,19 @@ Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br>
 The procedure is same as hostname. Add new labels in culumn 'new_hostname or label' and save the CSV.<br> 
 Run 'patch_label.py'<br> 
 
-### **Save all NOS configs on local (Spine and Leaf)**
-All rendered NOS configs got saved on local. Create 'nos_config' directory automatically and put .conf into it.<br> 
+### **Save NOS configs on local (Spine and Leaf)**
+All rendered NOS configs got saved on local. The script create 'nos_config' directory automatically and put .conf into it.<br> 
 Run 'get_nos_config.py'<br>
+
+### **Save AOS database sheet tie to device IP**
+You get AOS database related network device IP as xlsx file.
+
+1. Device
+2. Cabling
+3. Underlay 
+4. Overlay 
+
+Run 'get_ip_sheet.py'<br>
 
 ## **Closed-Loop**
 ### **Push ifdown configlets triggered by IBA interface flap anomaly**
