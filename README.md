@@ -93,7 +93,7 @@ Run 'get_ip_sheet.py'<br>
    - configlets.json
    - configlets_intdown_flap.py<br>
    if your test env is on Apstra Cloudlab<br>
-   - ahost='172.16.90.3' in 'common.py'<br>
+   ahost='172.16.90.3' in 'common.py'<br>
    - Disable urllib3 in 'common.py' and 'configlets_intdown_flap.py'<br>
      ```
      #from requests.packages.urllib3.exceptions import InsecureRequestWarning
