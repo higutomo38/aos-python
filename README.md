@@ -14,7 +14,7 @@ git clone https://github.com/higutomo38/aos.git
 
 Install Python 3.X on you local. Need some python modules in addition to default.
 ```
-pip install requests urllib3 openpyxl
+pip install requests urllib3 openpyxl netaddr
 ```
 
 Modify 'common.py' according to your env and save the file.
