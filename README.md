@@ -44,6 +44,9 @@ blue_name = 'bp_name'
 |  | get_ip_sheet.py | Save AOS database sheet tie to device IP | Cumulus, EOS |
 | Closed-Loop | configlets_intdown_flap.py | Push interface down configlets triggered by IBA interface flap anomaly | Cumulus |
 
+
+All modules should be same directory as 'common.py' otherwise you can't login to AOS.
+
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
 First of all you need to get current hostname list as CSV. Run 'get_hostname.py' and then you can see 'hostname_label.csv' on same directory you executed the script.
