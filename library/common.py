@@ -9,7 +9,7 @@ import json
 import getpass
 
 # --- entry ---
-ahost = 'aos-clapstratomoyukihi-aiml2700.srv.ravcloud.com'
+ahost = 'aos-clapstratomoyukihi-aiml27.srv.ravcloud.com'
 blue_name = 'demo'
 hostname = 'rack-001-leaf1'
 
