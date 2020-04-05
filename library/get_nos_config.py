@@ -1,11 +1,13 @@
 # --- import ---
 import common
-import sys
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import json
 import os
+import re
+import shutil
+import datetime
 
 ahost = common.ahost
 l = common.blueprint()
@@ -22,5 +24,7 @@ def nos_config():
     resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
     with open('./nos_config/' + j + '.conf','w') as f:
       print((resp['config']), file = f)
+  now = re.sub('[ :]','-', datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+  shutil.make_archive(now, 'zip', 'nos_config')
 
 nos_config()

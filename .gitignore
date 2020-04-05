@@ -1,13 +1,10 @@
 # Diectory
 /library/__pycache__
 /library/nos_config
-
+/library/iba_probe
+/library/tmp
 # File
-get_graphqe_relation.py
-get_config_sheet.py
 hostname_label.csv
 parameter.csv
 parameter.xlsx
 ip_sheet.xlsx
-system_relationship.csv
-get_config_sheet_backup.py

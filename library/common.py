@@ -6,50 +6,19 @@ import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import json
+import getpass
 
 # --- entry ---
-uname = 'admin'
-passw = 'hogefuga'
-ahost = 'aos.com'
+ahost = 'aos-clapstratomoyukihi-aiml2700.srv.ravcloud.com'
 blue_name = 'demo'
-hostname = 'leaf2-001'
+hostname = 'rack-001-leaf1'
 
 # --- exec ---
-# get racks
-def bp_racks_get(token, bp_id):
-  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/racks'.format(blueprint_id = bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
-
-# get cabling-map
-def bp_cabling_map_get(token, bp_id):
-  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/cabling-map'.format(blueprint_id = bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
-
- # get nodes interface
-def bp_nodes_interface_get(token, bp_id):
-  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/nodes?node_type=interface'.format(blueprint_id = bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
-
- # get nodes
-def bp_nodes_system_get(token, bp_id):
-  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/nodes?node_type=system'.format(blueprint_id = bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
-
- # get agents
-def system_agents_get(token):
-  ep = 'https://' + ahost + '/api/system-agents'
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
-
-
-
-
 # aos login
 def login():
+  print('AOS Login')
+  uname = input('ID:')
+  passw = getpass.getpass()
   ep = 'https://' + ahost + '/api/user/login'
   payload={"username":uname, "password":passw}
   resp = requests.post(ep, headers={'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
@@ -168,6 +137,35 @@ def bp_graph_vn(token, bp_id):
   resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
   return resp
 
+# get racks
+def bp_racks_get(token, bp_id):
+  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/racks'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+# get cabling-map
+def bp_cabling_map_get(token, bp_id):
+  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/cabling-map'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+ # get nodes interface
+def bp_nodes_interface_get(token, bp_id):
+  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/nodes?node_type=interface'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+ # get nodes
+def bp_nodes_system_get(token, bp_id):
+  ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/nodes?node_type=system'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+ # get agents
+def system_agents_get(token):
+  ep = 'https://' + ahost + '/api/system-agents'
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
 
 
 # get node id of system (switch, server)
