@@ -5,8 +5,8 @@
 #/library/iba_probe
 #/library/tmp
 # File
-*.csv
-*.xlsx
+#*.csv
+#*.xlsx
 #hostname_label.csv
 #parameter.csv
 #parameter.xlsx
