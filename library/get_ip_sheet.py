@@ -115,7 +115,8 @@ class ConfigSheet:
     wb = openpyxl.Workbook()
     ws = wb.create_sheet(self.list[0])
     config_xlsx(data, ll, self.list[0], ws)
-    wb.remove_sheet(wb.get_sheet_by_name('Sheet'))
+    # Remove 'Sheet'
+    wb.remove(wb.worksheets[0])
     wb.save('ip_sheet.xlsx')
 
 

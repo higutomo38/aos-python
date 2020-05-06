@@ -9,7 +9,7 @@ import re
 import shutil
 import datetime
 
-ahost = common.ahost
+ahost = common.args[1]
 l = common.blueprint()
 token = l[0]
 bp_id = l[1]

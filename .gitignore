@@ -1,12 +1,15 @@
 # Diectory
-/library/__pycache__
-/library/nos_config
-/library/iba_probe
-/library/tmp
+/library/*
+#/library/__pycache__
+#/library/nos_config
+#/library/iba_probe
+#/library/tmp
 # File
-hostname_label.csv
-parameter.csv
-parameter.xlsx
-ip_sheet.xlsx
+*.csv
+*.xlsx
+#hostname_label.csv
+#parameter.csv
+#parameter.xlsx
+#ip_sheet.xlsx
 post_probe.py
 
