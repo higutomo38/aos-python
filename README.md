@@ -17,16 +17,15 @@ Install Python 3.X on you local. Need some python modules in addition to default
 pip install requests urllib3 openpyxl netaddr
 ```
 
-Modify 'common.py' according to your env and save the file.
-
-ahost: AOS IP address or Name<br>
-blue_name: Blueprint Name
+Run python file with AOS server IP and Blueprint Name.<br>
+python <Python_File_Name> <AOS IP_Address or FQDN> <Blueprint_Name>
 
 e.g.<br>
 ```
-#--- entry ---
-ahost = 'aos_server.com'
-blue_name = 'bp_name'
+python get_hostname.py 192.168.1.1 blueprint
+AOS Login
+ID:admin
+Password:
 ```
 
 ## **Module list**
