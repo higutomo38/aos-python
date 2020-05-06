@@ -17,7 +17,7 @@ Install Python 3.X on you local. Need some python modules in addition to default
 pip install requests urllib3 openpyxl netaddr
 ```
 
-Run python file with AOS server IP and Blueprint Name.<br>
+Run python file with AOS server IP and Blueprint Name.<br><br>
 python <Python_File_Name> <AOS IP_Address or FQDN> <Blueprint_Name>
 
 e.g.<br>
