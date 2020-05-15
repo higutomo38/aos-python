@@ -33,13 +33,13 @@ ahost = common.args[1]
 l = common.blueprint()
 token = l[0]
 bp_id = l[1]
-bp_node_list_system = common.bp_node_list_system(token, bp_id)
-bp_diff = common.bp_diff(token, bp_id)
-configlets_dic = common.bp_configlets(token, bp_id)
+bp_node_get_system = common.bp_node_get_system(token, bp_id)
+bp_diff = common.bp_diff_get(token, bp_id)
+configlets_dic = common.bp_configlets_get(token, bp_id)
 
 # get node id from system id
 def node_id_from_system_id():
-  for i in bp_node_list_system.values():
+  for i in bp_node_get_system['nodes'].values():
     if i["system_id"] == list[0]: return i["id"], list[1] # (node id, interface number)
 
 # post configlets

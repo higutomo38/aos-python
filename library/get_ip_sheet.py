@@ -18,21 +18,19 @@ bp_id = l[1]
 bp_cabling_map_get = common.bp_cabling_map_get(token, bp_id)
 bp_racks_get = common.bp_racks_get(token, bp_id)
 system_agents_get = common.system_agents_get(token)
-bp_graph_system_interface = common.bp_graph_system_interface(token, bp_id)
-bp_graph_sec_vn = common.bp_graph_sec_vn(token, bp_id)
-bp_graph_system_interfacemap = common.bp_graph_system_interfacemap(token, bp_id)
-bp_graph_system_vnins_vn_vnins_interface = common.bp_graph_system_vnins_vn_vnins_interface(token, bp_id)
-bp_graph_system = common.bp_graph_system(token, bp_id)
-bp_graph_vn = common.bp_graph_vn(token, bp_id)
+bp_qe_post_system_interface = common.bp_qe_post_system_interface(token, bp_id)
+bp_qe_post_sec_vn = common.bp_qe_post_sec_vn(token, bp_id)
+bp_qe_post_system_interfacemap = common.bp_qe_post_system_interfacemap(token, bp_id)
+bp_qe_post_system_vni_vn_vni_interface = common.bp_qe_post_system_vni_vn_vni_interface(token, bp_id)
+bp_qe_post_system = common.bp_qe_post_system(token, bp_id)
+bp_qe_post_vn = common.bp_qe_post_vn(token, bp_id)
 
-hoge = bp_graph_system
-#print (json.dumps(hoge, indent=4))
 
 
 # get [system id, hardware] list
 def graph_system_interfacemap():
   d = {}
-  for i in bp_graph_system_interfacemap['items']:
+  for i in bp_qe_post_system_interfacemap['items']:
     d[i['system']['system_id']] = i['map']['device_profile_id']
 #  print (json.dumps(d, indent=4))
   return d
@@ -90,7 +88,7 @@ class ConfigSheet:
       dd[i['label']] = [j['id'] for j in i['leafs'] ]
       l = []
     # make contents for xlsx
-    for i in bp_graph_system['items']:
+    for i in bp_qe_post_system['items']:
       i = i['system']
       # spine
       if i['role'] == 'spine':
@@ -141,7 +139,7 @@ class ConfigSheet:
       for j in d.items(): # j:('rack_type_2_001', ['fb82532f-6831-4807-a908-8208cf47f2a2', '1084e191-1cad-4164-8c6c-ade962f5647e', '36db970f-0241-48a8-87c9-1f99a4ee8cb7', '89ad07cd-06e0-4ba2-aaa2-6c50aabd8e96'])
         if l[0] in j[1] or l[5] in j[1]: l.insert(0, j[0])
       # replace system id to serial number.
-      for j in bp_graph_system['items']:
+      for j in bp_qe_post_system['items']:
         if l[1] == j['system']['id']: l[1] = j['system']['system_id']
         elif l[6] == j['system']['id']: l[6] = j['system']['system_id']
       ll.append(l)
@@ -158,7 +156,7 @@ class ConfigSheet:
     ll = []
     # First line for 'Underlay'
     data = ['Hostname', 'Int Type', 'Int Name', 'IPv4 Address', 'Protocol']
-    for i in bp_graph_system_interface['items']:
+    for i in bp_qe_post_system_interface['items']:
       if i['system']['hostname'] != None and i['interface']['ipv4_addr'] != None:
         l.extend([i['system']['hostname'], i['interface']['if_type'], i['interface']['if_name'], i['interface']['ipv4_addr'], i['interface']['protocols']])
         ll.append(l)
@@ -174,8 +172,8 @@ class ConfigSheet:
     l = []
     ll = []
     data = ['Hostname', 'VRF_Name', 'VRF_VLAN', 'VRF_VNI', 'Int_type', 'VN_Name', 'VN_VLAN', 'VN_VXLAN', 'NW_Address', 'IP_Address', 'IP_Gateway']
-    for i in bp_graph_system_vnins_vn_vnins_interface['items']:
-      for j in bp_graph_sec_vn['items']:
+    for i in bp_qe_post_system_vni_vn_vni_interface['items']:
+      for j in bp_qe_post_sec_vn['items']:
         if i['virtual_network']['id'] == j['virtual_network']['id']:
           l.extend([i['system']['hostname'], j['vrf']['vrf_name'], j['vrf']['vlan_id'], j['vrf']['vni_id'], i['interface']['if_type'],i['virtual_network']['label'],i['vn_instance']['vlan_id'],i['virtual_network']['vn_id'],i['virtual_network']['ipv4_subnet'],i['interface']['ipv4_addr'],i['virtual_network']['virtual_gateway_ipv4']])
           ll.append(l)

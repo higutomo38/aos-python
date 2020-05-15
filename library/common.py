@@ -1,4 +1,4 @@
-### Get common info: Token, BP ID, Node ID and EndPoint
+### Get common info: Token, BP ID, Node ID and etc
 #
 # --- import ---
 import sys
@@ -10,9 +10,10 @@ import getpass
 import socket
 
 args = sys.argv
+deploy_mode = ['deploy','undeploy','ready','drain']
 
 # --- exec ---
-# aos login
+# aos login and get token
 def login():
   try:
     addr = socket.gethostbyname(args[1])
@@ -45,99 +46,109 @@ def blueprint():
   print ('----- Error:Blueprint name -----')
   sys.exit()
 
-# get node id of system (switch, server)
-def bp_node_id_system(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/nodes?node_type=system'.format(bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  dict = resp["nodes"]
-  for i in dict.values():
-    if i['hostname'] == hostname: return i['id']
-  print ('----- Error:Hostname -----')
-  sys.exit()
 
-# get node id list of system (switch)
-def bp_node_id_list_system(token, bp_id):
-  list = []
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/nodes?node_type=system'.format(bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  for i in resp["nodes"].values():
-    if i["role"] == "spine" or i["role"] == "leaf": list.append(i["id"])
-  return list
 
-# get node id + hostname of system (switch)
-def bp_node_id_hostname_list_system(token, bp_id):
-  dict = {}
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/nodes?node_type=system'.format(bp_id)
+### Platform
+## system-agents
+# get system-agents
+def system_agents_get(token):
+  ep = 'https://' + args[1] + '/api/system-agents'
   resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  for i in resp["nodes"].values():
-    if i["role"] == "spine" or i["role"] == "leaf": dict[i["id"]] = i['hostname']
-  return dict
+  return resp
+
+## systems
+# get systems
+def systems_get(token):
+  ep = 'https://' + args[1] + '/api/systems'
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+## blueprints
+# get diff
+def bp_diff_get(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/diff'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
 
 # get node list of system (switch, server)
-def bp_node_list_system(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/nodes?node_type=system'.format(bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp["nodes"]
-
-# get diff
-def bp_diff(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/diff'.format(bp_id)
+def bp_node_get_system(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/nodes?node_type=system'.format(blueprint_id = bp_id)
   resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
   return resp
 
-# get configlets
-def bp_configlets(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/configlets'.format(bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
 
-# get graph system - sz_instnce - interface - link(switch, server, er)
-def bp_graph_system_interface(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/qe'.format(bp_id)
-  payload={"query": "node('system', name='system').out('hosted_interfaces').node('interface', name='interface')"}
-  resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
-  return resp
 
-# get graph system - interface - link - pair(switch, server, er)
-def bp_graph_system_interface_link_pair(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/qe'.format(bp_id)
-  payload={"query": "node('system', name='sys_one').out('hosted_interfaces').node('interface', name='int_one').out('link').node('link').in_('link').node('interface', name='int_two').in_('hosted_interfaces').node('system', name='sys_two').ensure_different('int_one', 'int_two')"}
-  resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
-  return resp
-
-# get graph security_zone - virtual_network - vn_instance - interface
-def bp_graph_sec_vn(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/qe'.format(bp_id)
+# Graph
+# post qe security_zone - virtual_network
+def bp_qe_post_sec_vn(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/qe'.format(blueprint_id = bp_id)
   payload={"query": "node('security_zone', name='vrf').out().node('virtual_network', name='virtual_network')"}
   resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
   return resp
 
-# get graph system - vn_instance - virtual_network - vn_instance - interface
-def bp_graph_system_vnins_vn_vnins_interface(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/qe'.format(bp_id)
-  payload={"query": "node('system',name='system').out('hosted_vn_instances').node('vn_instance',name='vn_instance').out('instantiates').node('virtual_network', name='virtual_network').out('instantiated_by').node('vn_instance',name='vn_instance').out('member_interfaces').node('interface', name='interface')"}
-  resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
-  return resp
-
-# get graph system - interface_map
-def bp_graph_system_interfacemap(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/qe'.format(bp_id)
-  payload={"query": "node('system', name='system').out('interface_map').node('interface_map', name='map')"}
-  resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
-  return resp
-
-# get graph system
-def bp_graph_system(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/qe'.format(bp_id)
+# post qe system
+def bp_qe_post_system(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/qe'.format(blueprint_id = bp_id)
   payload={"query": "node('system', name='system')"}
   resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
   return resp
 
-# get graph virtual network
-def bp_graph_vn(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{0}/qe'.format(bp_id)
+# post qe system (system_type='server')
+def bp_qe_post_system_systemtype(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/qe'.format(blueprint_id = bp_id)
+  payload={"query": "node('system', name='system', system_type='server')"}
+  resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
+  return resp
+
+# post qe system - sz_instnce - interface
+def bp_qe_post_system_interface(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/qe'.format(blueprint_id = bp_id)
+  payload={"query": "node('system', name='system').out().node('interface', name='interface')"}
+  resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
+  return resp
+
+# post qe system - interface - link - interface - system
+def bp_qe_post_system_interface_link_pair(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/qe'.format(blueprint_id = bp_id)
+  payload={"query": "node('system', name='sys_one').out().node('interface', name='int_one').out().node('link').in_('link').node('interface', name='int_two').in_('hosted_interfaces').node('system', name='sys_two').ensure_different('int_one', 'int_two')"}
+  resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
+  return resp
+
+# post qe system - interface_map
+def bp_qe_post_system_interfacemap(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/qe'.format(blueprint_id = bp_id)
+  payload={"query": "node('system', name='system').out().node('interface_map', name='map')"}
+  resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
+  return resp
+
+# post qe system - vn_instance - virtual_network - vn_instance - interface
+def bp_qe_post_system_vni_vn_vni_interface(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/qe'.format(blueprint_id = bp_id)
+  payload={"query": "node('system',name='system').out().node('vn_instance',name='vn_instance').out().node('virtual_network', name='virtual_network').out().node('vn_instance',name='vn_instance').out().node('interface', name='interface')"}
+  resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
+  return resp
+
+# post qe virtual_network
+def bp_qe_post_vn(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/qe'.format(blueprint_id = bp_id)
   payload={"query": "node('virtual_network', name='virtual_network')"}
   resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False).json()
+  return resp
+
+
+
+### Reference Designs
+## two_stage_l3clos extension
+# get cabling-map
+def bp_cabling_map_get(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/cabling-map'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+  return resp
+
+# get configlets
+def bp_configlets_get(token, bp_id):
+  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/configlets'.format(blueprint_id = bp_id)
+  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
   return resp
 
 # get racks
@@ -146,35 +157,41 @@ def bp_racks_get(token, bp_id):
   resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
   return resp
 
-# get cabling-map
-def bp_cabling_map_get(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/cabling-map'.format(blueprint_id = bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
 
- # get nodes interface
-def bp_nodes_interface_get(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/nodes?node_type=interface'.format(blueprint_id = bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
 
- # get nodes
-def bp_nodes_system_get(token, bp_id):
-  ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/nodes?node_type=system'.format(blueprint_id = bp_id)
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
 
- # get agents
-def system_agents_get(token):
-  ep = 'https://' + args[1] + '/api/system-agents'
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
 
- # get systems
-def systems_get(token):
-  ep = 'https://' + args[1] + '/api/systems'
-  resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-  return resp
+
+# # get node id of system (switch, server)
+# def bp_node_id_system(token, bp_id):
+#   ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/nodes?node_type=system'.format(blueprint_id = bp_id)
+#   resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+#   dict = resp["nodes"]
+#   for i in dict.values():
+#     if i['hostname'] == hostname: return i['id']
+#   print ('----- Error:Hostname -----')
+#   sys.exit()
+#
+# # get node id list of system (switch)
+# def bp_node_id_list_system(token, bp_id):
+#   list = []
+#   ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/nodes?node_type=system'.format(blueprint_id = bp_id)
+#   resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+#   for i in resp["nodes"].values():
+#     if i["role"] == "spine" or i["role"] == "leaf": list.append(i["id"])
+#   return list
+#
+#  # get nodes interface
+# def bp_nodes_interface_get(token, bp_id):
+#   ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/nodes?node_type=interface'.format(blueprint_id = bp_id)
+#   resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+#   return resp
+#
+#  # get nodes
+# def bp_nodes_system_get(token, bp_id):
+#   ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/nodes?node_type=system'.format(blueprint_id = bp_id)
+#   resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+#   return resp
 
 # get node id of system (switch, server)
 # ex.3590eec3-0b56-4b2f-90d6-e428d5d499e9
