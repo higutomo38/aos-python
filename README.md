@@ -63,7 +63,7 @@ The procedure is same as hostname. Add new labels in culumn 'new_hostname or lab
 Run 'patch_label.py'<br> 
 
 ### **Change deploy mode (Server)**
-You can monitor Leaf interfaces up/down facing server without aos agent when turn deploy mode of servers on.
+You can monitor Leaf interfaces up/down facing server without aos agent when turn deploy mode of servers on.<br> 
 Run 'patch_deploy_mode_server.py'<br> 
 
 ### **Save NOS configs on local (Spine and Leaf)**
