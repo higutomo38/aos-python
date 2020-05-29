@@ -1,0 +1,248 @@
+{
+  "label": "Total East/West Traffic",
+  "description": "The probe calculates total east/west traffic",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "if_counter",
+      "name": "external router south-north link traffic",
+      "outputs": {
+        "out": "ext_router_interface_traffic"
+      },
+      "properties": {
+        "interface": "iface.if_name",
+        "enable_streaming": false,
+        "system_id": "system.system_id",
+        "graph_query": "node(\"system\", name=\"system\", system_id=not_none()).out(\"hosted_interfaces\").node(\"interface\", name=\"iface\", if_name=not_none()).out(\"link\").node(\"link\", link_type=\"ethernet\", role=\"to_external_router\")",
+        "counter_type": "tx_bps"
+      }
+    },
+    {
+      "inputs": {},
+      "type": "if_counter",
+      "name": "leaf server traffic counters",
+      "outputs": {
+        "out": "server_traffic_counters"
+      },
+      "properties": {
+        "interface": "iface.if_name",
+        "enable_streaming": false,
+        "system_id": "system.system_id",
+        "graph_query": "node(\"system\", name=\"system\", system_id=not_none(), role=\"leaf\").out(\"hosted_interfaces\").node(\"interface\", name=\"iface\", if_name=not_none()).out(\"link\").node(\"link\", link_type=\"ethernet\").in_(\"link\").node(\"interface\").in_(\"hosted_interfaces\").node(\"system\", system_type=\"server\")",
+        "counter_type": "rx_bps"
+      }
+    },
+    {
+      "inputs": {
+        "in": "ext_router_interface_traffic"
+      },
+      "type": "periodic_average",
+      "name": "external router south-north links traffic average",
+      "outputs": {
+        "out": "ext_router_interface_traffic_avg"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "period": 60,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "server_traffic_counters"
+      },
+      "type": "periodic_average",
+      "name": "server traffic average",
+      "outputs": {
+        "out": "server_traffic_avg"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "period": 60,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "ext_router_interface_traffic_avg"
+      },
+      "type": "sum",
+      "name": "south-north traffic",
+      "outputs": {
+        "out": "total_outgoing_traffic"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "group_by": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "server_traffic_avg"
+      },
+      "type": "sum",
+      "name": "total server traffic",
+      "outputs": {
+        "out": "total_server_traffic"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "group_by": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "total_outgoing_traffic"
+      },
+      "type": "periodic_average",
+      "name": "outgoing_traffic_average",
+      "outputs": {
+        "out": "total_outgoing_traffic_average"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "period": 60,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "total_server_traffic"
+      },
+      "type": "periodic_average",
+      "name": "server generated traffic average",
+      "outputs": {
+        "out": "total_server_generated_traffic_average"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "period": 60,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "subtrahend": "total_server_generated_traffic_average",
+        "minuend": "total_outgoing_traffic_average"
+      },
+      "type": "subtract",
+      "name": "east-west traffic",
+      "outputs": {
+        "out": "eastwest_traffic"
+      },
+      "properties": {
+        "enable_streaming": false
+      }
+    },
+    {
+      "inputs": {
+        "in": "total_outgoing_traffic_average"
+      },
+      "type": "accumulate",
+      "name": "south-north traffic history",
+      "outputs": {
+        "out": "total_outgoing_traffic_timeseries"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 720,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    },
+    {
+      "inputs": {
+        "in": "total_server_generated_traffic_average"
+      },
+      "type": "accumulate",
+      "name": "total server traffic history",
+      "outputs": {
+        "out": "total_server_traffic_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 720,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    },
+    {
+      "inputs": {
+        "in": "eastwest_traffic"
+      },
+      "type": "accumulate",
+      "name": "east-west traffic history",
+      "outputs": {
+        "out": "eastwest_traffic_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 720,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ],
+  "stages": [
+    {
+      "name": "ext_router_interface_traffic_avg",
+      "description": "Calculate average external route South-North link traffic for the last 60 seconds",
+      "units": "bps"
+    },
+    {
+      "name": "total_server_traffic",
+      "description": "Calculate total server traffic",
+      "units": "bps"
+    },
+    {
+      "name": "server_traffic_avg",
+      "description": "Calculate average traffic on server facing interfaces for the last 60 seconds",
+      "units": "bps"
+    },
+    {
+      "name": "total_outgoing_traffic",
+      "description": "Calculate total outgoing traffic",
+      "units": "bps"
+    },
+    {
+      "name": "ext_router_interface_traffic",
+      "description": "Calculate external router South-North link traffic",
+      "units": "bps"
+    },
+    {
+      "name": "total_outgoing_traffic_timeseries",
+      "description": "History of the outgoing traffic",
+      "units": "bps"
+    },
+    {
+      "name": "total_server_generated_traffic_average",
+      "description": "Calculate average server traffic for the last 60 seconds",
+      "units": "bps"
+    },
+    {
+      "name": "eastwest_traffic",
+      "description": "Calculate East-West traffic",
+      "units": "bps"
+    },
+    {
+      "name": "server_traffic_counters",
+      "description": "Calculate traffic on server facing interfaces of leafs",
+      "units": "bps"
+    },
+    {
+      "name": "total_outgoing_traffic_average",
+      "description": "Calculate average outgoing traffic for the last 60 seconds",
+      "units": "bps"
+    },
+    {
+      "name": "eastwest_traffic_history",
+      "description": "East-West traffic history",
+      "units": "bps"
+    },
+    {
+      "name": "total_server_traffic_history",
+      "description": "History of the average server traffic",
+      "units": "bps"
+    }
+  ]
+}

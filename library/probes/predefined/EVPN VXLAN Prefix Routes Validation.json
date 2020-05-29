@@ -1,0 +1,150 @@
+{
+  "label": "EVPN VXLAN Prefix Routes Validation",
+  "description": "The probe validates EVPN VXLAN subnet routes",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "extensible_data_collector",
+      "name": "EVPN VXLAN subnet routes",
+      "outputs": {
+        "out": "EVPN Virtual Network subnet VTEP source count"
+      },
+      "properties": {
+        "virtual_network_label": "virtual_network.label",
+        "subnet": "virtual_network.ipv4_subnet",
+        "ip_family": "\"ipv4\"",
+        "data_type": "ns",
+        "graph_query": "match(node('system', name='system', deploy_mode='deploy', role='leaf'),node('system', name='remote_system', deploy_mode='deploy', role='leaf').out('hosted_vn_instances') .node('vn_instance', name='remote_vn_instance').out('instantiates').node('virtual_network', name='virtual_network', vn_type='vxlan',ipv4_subnet=not_none()).in_('member_vns').node('security_zone', name='security_zone', sz_type='evpn'),).distinct(['system', 'virtual_network', 'security_zone'])",
+        "service_interval": "120",
+        "keys": [
+          "l3_vni",
+          "subnet",
+          "ip_family"
+        ],
+        "service_name": "evpn_vxlan_type5",
+        "execution_count": "-1",
+        "system_id": "system.system_id",
+        "vrf": "security_zone.vrf_name",
+        "enable_streaming": false,
+        "ingestion_filter": {},
+        "l3_vni": "'%s' % str(security_zone.vni_id)",
+        "service_input": "\"\""
+      }
+    },
+    {
+      "inputs": {
+        "in": "EVPN Virtual Network subnet VTEP source count"
+      },
+      "type": "range_check",
+      "name": "Check source count of subnet",
+      "outputs": {
+        "out": "Check source count of subnet"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "max": "len([qr for qr in query_result if str(qr['security_zone'].vni_id) == context.l3_vni and qr['virtual_network'].ipv4_subnet == context.subnet and not (qr['rg'] and qr['rg_peer'] and context.system_id == qr['rg_peer'].system_id and (qr['dp'].selector['os'].lower() == 'cumulus' or qr['dp'].selector['os'].lower() == 'nxos'))])",
+          "min": "len([qr for qr in query_result if str(qr['security_zone'].vni_id) == context.l3_vni and qr['virtual_network'].ipv4_subnet == context.subnet and not (qr['rg'] and qr['rg_peer'] and context.system_id == qr['rg_peer'].system_id and (qr['dp'].selector['os'].lower() == 'cumulus' or qr['dp'].selector['os'].lower() == 'nxos'))])"
+        },
+        "raise_anomaly": false,
+        "graph_query": [
+          "match( node('system', name='system', deploy_mode='deploy', role='leaf').out('hosted_vn_instances').node('vn_instance', name='remote_vn_instance').out('instantiates').node('virtual_network', name='virtual_network', vn_type='vxlan', ipv4_subnet=not_none()).in_('member_vns').node('security_zone', name='security_zone', sz_type='evpn'),node(name='system').out('interface_map').node('interface_map').out('device_profile').node('device_profile', name='dp'),optional(node(name='system').out('part_of_redundancy_group').node(name='rg').out('composed_of_systems').node('system', name='rg_peer'))).ensure_different('system', 'rg_peer')"
+        ]
+      }
+    },
+    {
+      "inputs": {
+        "in": "Check source count of subnet"
+      },
+      "type": "state_check",
+      "name": "Subnet source count anomaly",
+      "outputs": {
+        "out": "Subnet source count anomaly"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "state": "'false'",
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "Subnet source count anomaly"
+      },
+      "type": "match_count",
+      "name": "Device to subnet anomaly count",
+      "outputs": {
+        "out": "Device to subnet anomaly count"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "group_by": [
+          "system_id"
+        ],
+        "reference_state": "true"
+      }
+    },
+    {
+      "inputs": {
+        "in": "Subnet source count anomaly"
+      },
+      "type": "match_count",
+      "name": "EVPN Type 5 ipv4 summary",
+      "outputs": {
+        "out": "EVPN Type 5 ipv4 summary"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "group_by": [],
+        "reference_state": "true"
+      }
+    },
+    {
+      "inputs": {
+        "in": "Subnet source count anomaly"
+      },
+      "type": "match_count",
+      "name": "Subnet anomalies to device count",
+      "outputs": {
+        "out": "Subnet anomalies to device count"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "group_by": [
+          "subnet",
+          "vrf",
+          "virtual_network_label"
+        ],
+        "reference_state": "true"
+      }
+    }
+  ],
+  "stages": [
+    {
+      "name": "Check source count of subnet",
+      "description": "Checks the vtep source count for every Virtual Network subnet from the graph query with the value from the collector."
+    },
+    {
+      "name": "Device to subnet anomaly count",
+      "description": "Count of Virtual Network subnet anomalies on a system."
+    },
+    {
+      "name": "Subnet anomalies to device count",
+      "description": "Count of devices per Virtual network subnet anomaly."
+    },
+    {
+      "name": "EVPN Type 5 ipv4 summary",
+      "description": "Count of Virtual Network subnet anomalies across all the leaves"
+    },
+    {
+      "name": "EVPN Virtual Network subnet VTEP source count",
+      "description": "Virtual Network subnet across all the leafs and the count of the source vteps that a particular leaf should receive the type 5  route from.The source vtep is counted based on the rd that the type5 route was received from"
+    },
+    {
+      "name": "Subnet source count anomaly",
+      "description": "Geneartes an anomaly for a Virtual Network subnet if the source vtep count doesnot match with the intent."
+    }
+  ]
+}

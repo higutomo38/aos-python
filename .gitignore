@@ -1,12 +1,12 @@
 # Diectory
 #/library/*
-/library/__pycache__
-/library/dist
-/library/probes
-/library/nos_config
-/library/tmp
+/library/__pycache__/
+/library/dist/
+/library/nos_config/
+/library/tmp/
 # File
 *.zip
 *.csv
 *.xlsx
-/library/z_*
+/z_*
+/.gitignore
