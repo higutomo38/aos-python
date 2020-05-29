@@ -87,20 +87,20 @@ Run 'get_ip_sheet.py'<br>
 ### **Create all probes without AOS-CLI**
 We usually use WebUI and command line interface tool AOS-CLI to create custom IBA probe. 
 
-WebUI
-・Upload Custom Collector Package
-・Install Custom Collector to Agent
-AOS-CLI
-・Imported service registry
-・Create probes
+WebUI<br>
+・Upload Custom Collector Package<br>
+・Install Custom Collector to Agent<br>
+AOS-CLI<br>
+・Imported service registry<br>
+・Create probes<br>
 
 This python script execute batch processing of above using API.
 
-Download latest AOS SDK e.g.'aos-dev-sdk-462.zip' from here.
-https://portal.apstra.com/downloads/
+Download latest AOS SDK e.g.'aos-dev-sdk-462.zip' from here.<br>
+https://portal.apstra.com/downloads/ <br>
 
-Copy the zip into directory same as 'common.py', 'post_iba_probe.py' and 'Probes'. 
-Run 'post_iba_probe.py' putting on behind blueprint.
+Copy the zip into directory same as 'common.py', 'post_iba_probe.py' and 'Probes'. <br>
+Run 'post_iba_probe.py' putting on behind blueprint.<br>
 
 e.g.<br>
 ```
