@@ -91,16 +91,16 @@ WebUI<br>
 ・Upload Custom Collector Package<br>
 ・Install Custom Collector to Agent<br>
 AOS-CLI<br>
-・Imported service registry<br>
+・Import service registry<br>
 ・Create probes<br>
 
-This python script execute batch processing of above using API.
+This python script execute batch of above using API.
 
 Download latest AOS SDK e.g.'aos-dev-sdk-462.zip' from here.<br>
 https://portal.apstra.com/downloads/ <br>
 
 Copy the zip into directory same as 'common.py', 'post_iba_probe.py' and 'Probes'. <br>
-Run 'post_iba_probe.py' putting on behind blueprint.<br>
+Run 'post_iba_probe.py' putting the zip file behind blueprint.<br>
 
 e.g.<br>
 ```
