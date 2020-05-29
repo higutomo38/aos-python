@@ -1,0 +1,115 @@
+{
+  "label": "Monitor packet loss on servers",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "Packet loss percent from servers",
+      "outputs": {
+        "out": "packet_loss_percent"
+      },
+      "properties": {
+        "target": "system.tags",
+        "graph_query": "match(node('system', name='system', role=is_in(['l2_server', 'l3_server']), system_id=not_none()))",
+        "service_interval": "120",
+        "service_name": "ping",
+        "data_type": "ns",
+        "execution_count": "-1",
+        "system_id": "system.system_id",
+        "service_input": "\"\"",
+        "key": "'packet_loss_percent'",
+        "enable_streaming": false
+      }
+    },
+    {
+      "inputs": {
+        "in": "packet_loss_percent"
+      },
+      "type": "range_check",
+      "name": "Check non-zero packet loss percent",
+      "outputs": {
+        "out": "has_packet_loss"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "min": 1
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "packet_loss_percent"
+      },
+      "type": "accumulate",
+      "name": "History of packet loss percent",
+      "outputs": {
+        "out": "packet_loss_percent_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    },
+    {
+      "inputs": {
+        "in": "has_packet_loss"
+      },
+      "type": "accumulate",
+      "name": "Anomaly history of packet loss",
+      "outputs": {
+        "out": "packet_loss_anomaly_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    },
+    {
+      "inputs": {
+        "in": "has_packet_loss"
+      },
+      "type": "time_in_state_check",
+      "name": "Detect sustained packet loss",
+      "outputs": {
+        "out": "has_sustained_packet_loss"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "time_window": 960,
+        "state_range": {
+          "\"false\"": [
+            {
+              "min": 241
+            }
+          ]
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "has_sustained_packet_loss"
+      },
+      "type": "accumulate",
+      "name": "Anomaly history of sustained packet loss",
+      "outputs": {
+        "out": "sustained_packet_loss_anomaly_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ]
+}

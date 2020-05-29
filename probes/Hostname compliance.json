@@ -1,0 +1,53 @@
+{
+  "label": "Hostname compliance",
+  "description": "Raise anomaly if FQDN of any system does not match specified regex.",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "service_data_collector",
+      "name": "FQDN collector",
+      "outputs": {
+        "out": "fqdn"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "service_name": "hostname",
+        "system_id": "system.system_id",
+        "graph_query": "node('system', name='system', system_id=not_none(), deploy_mode='deploy')",
+        "key": "'fqdn'"
+      }
+    },
+    {
+      "inputs": {
+        "in": "fqdn"
+      },
+      "type": "match_string",
+      "name": "Match FQDN",
+      "outputs": {
+        "out": "matched_fqdns"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "regexp": "'rack_001_leaf1'",
+        "raise_anomaly": false,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "matched_fqdns"
+      },
+      "type": "state_check",
+      "name": "Check FQDN mismatches",
+      "outputs": {
+        "out": "fqdn_mismatch"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "state": "'false'",
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    }
+  ]
+}
