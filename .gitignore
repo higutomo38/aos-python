@@ -8,5 +8,5 @@
 *.zip
 *.csv
 *.xlsx
-/z_*
+/z_change_default.py
 /.gitignore
