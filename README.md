@@ -39,7 +39,7 @@ e.g. python get_hostname.py 192.168.1.1 'blue print'
 |  | patch_deploy_mode_server.py | Change deploy mode | Server |
 |  | get_nos_config.py | Save NOS configuration on local | Cumulus, EOS |
 |  | get_ip_sheet.py | Save AOS database sheet tie to device IP | Cumulus, EOS |
-| IBA | post_iba_probe.py | Create all probes without aos-cli | All |
+| IBA | post_iba_probe.py | Create all probes without AOS-CLI | All |
 | Closed-Loop | configlets_intdown_flap.py | Push interface down configlets triggered by IBA interface flap anomaly | Cumulus |
 
 
