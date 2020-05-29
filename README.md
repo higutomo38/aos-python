@@ -2,7 +2,7 @@
 
 These modules are AOS API Python scripts for demonstration.
 
-AOS 3.2.0
+AOS 3.2.1
 
 ## **Installation**
 
@@ -17,7 +17,7 @@ Install Python 3.X on your local. Need some python modules in addition to defaul
 pip install requests urllib3 openpyxl netaddr
 ```
 
-Run python file with AOS server FQDN or IP Address and Blueprint Name.<br>
+Run python file with AOS server FQDN or IP Address and Blueprint name.<br>
 
 e.g.<br>
 ```
@@ -26,6 +26,8 @@ AOS Login
 ID:admin
 Password:
 ```
+Use single quotation for Blueprint name if blank is in it.<br>
+e.g. python get_hostname.py 192.168.1.1 'blue print'
 
 ## **Module list**
 
@@ -37,6 +39,7 @@ Password:
 |  | patch_deploy_mode_server.py | Change deploy mode | Server |
 |  | get_nos_config.py | Save NOS configuration on local | Cumulus, EOS |
 |  | get_ip_sheet.py | Save AOS database sheet tie to device IP | Cumulus, EOS |
+| IBA | post_iba_probe.py | Create all probes without aos-cli | All |
 | Closed-Loop | configlets_intdown_flap.py | Push interface down configlets triggered by IBA interface flap anomaly | Cumulus |
 
 
@@ -79,6 +82,33 @@ You get AOS database related network device IP as xlsx file.
 4. Overlay 
 
 Run 'get_ip_sheet.py'<br>
+
+## **IBA**
+### **Create all probes without AOS-CLI**
+We usually use WebUI and command line interface tool AOS-CLI to create custom IBA probe. 
+
+WebUI
+・Upload Custom Collector Package
+・Install Custom Collector to Agent
+AOS-CLI
+・Imported service registry
+・Create probes
+
+This python script execute batch processing of above using API.
+
+Download latest AOS SDK e.g.'aos-dev-sdk-462.zip' from here.
+https://portal.apstra.com/downloads/
+
+Copy the zip into directory same as 'common.py', 'post_iba_probe.py' and 'Probes'. 
+Run 'post_iba_probe.py' putting on behind blueprint.
+
+e.g.<br>
+```
+python post_iba_probe.py 192.168.1.1 'tomo pod1' aos-dev-sdk-462.zip
+AOS Login
+ID:admin
+Password:
+```
 
 ## **Closed-Loop**
 ### **Push ifdown configlets triggered by IBA interface flap anomaly**
