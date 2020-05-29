@@ -100,7 +100,7 @@ Download latest AOS SDK e.g.'aos-dev-sdk-462.zip' from here.<br>
 https://portal.apstra.com/downloads/ <br>
 
 Copy the zip into directory same as 'common.py', 'post_iba_probe.py' and 'Probes'. <br>
-Run 'post_iba_probe.py' putting the zip file behind blueprint.<br>
+Run 'post_iba_probe.py' putting the zip file name behind blueprint.<br>
 
 e.g.<br>
 ```
