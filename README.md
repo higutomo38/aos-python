@@ -110,6 +110,8 @@ ID:admin
 Password:
 ```
 
+All probes are created with temporary input Ex.'Match expected os version by OS family.json' use NOS 'cumulus' and version '3.7.12' as default. You can edit them on WebUI Analytics in BP - Probes - Push Edit - Select processor you want to change.<br>
+
 ## **Closed-Loop**
 ### **Push ifdown configlets triggered by IBA interface flap anomaly**
 
