@@ -82,6 +82,23 @@ def bp_node_get_system(token, bp_id):
     resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
     return resp
 
+# get IBA widgets
+def bp_iba_widgets_get(token, bp_id):
+    ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/iba/widgets'.format(blueprint_id = bp_id)
+    resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+    return resp
+
+# get IBA dashboards
+def bp_iba_dashboards_get(token, bp_id):
+    ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/iba/dashboards'.format(blueprint_id = bp_id)
+    resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+    return resp
+
+# get IBA Probes
+def bp_probes_get(token, bp_id):
+    ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/probes'.format(blueprint_id = bp_id)
+    resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
+    return resp
 
 ## packages
 # get packages
