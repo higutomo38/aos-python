@@ -96,7 +96,7 @@ AOS-CLI<br>
 
 This python script execute batch of above using API.
 
-Download latest AOS SDK e.g.'aos-dev-sdk-462.zip' from here.<br>
+Download latest AOS SDK e.g.'aos-dev-sdk-XXX.zip' from here.<br>
 https://portal.apstra.com/downloads/ <br>
 
 Copy the zip into directory same as 'common.py', 'post_iba_probe.py' and 'Probes'. <br>
@@ -122,10 +122,9 @@ All probes are created with temporary input Ex.'Match expected os version by OS 
 #### **Syslog Server Setting**<br>
 1. Install python and libraries as above.
 2. Turn on syslog service.<br>
-3. Copy three files.<br>
+3. Copy files below.<br>
 
    - common.py
-   - configlets.json
    - configlets_intdown_flap.py<br>
  
 if your test env is on Apstra Cloudlab<br>
