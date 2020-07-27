@@ -1,32 +1,42 @@
-# --- import ---
-import common
+import datetime
+import os
+import re
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-import json
-import os
-import re
 import shutil
-import datetime
 
-ahost = common.args[1]
-l = common.blueprint()
-token = l[0]
-bp_id = l[1]
+from common import LoginBlueprint
+from common import AosApi
 
-bp_node_get_system = common.bp_node_get_system(token, bp_id)
+token_bp_id_address = LoginBlueprint().blueprint()
+token = token_bp_id_address[0]
+bp_id = token_bp_id_address[1]
+address = token_bp_id_address[2]
 
-# get NOS rendering config
-def nos_config():
-    dict = {}
-    for i in bp_node_get_system["nodes"].values():
-        if i["role"] == "spine" or i["role"] == "leaf": dict[i["id"]] = i['hostname']
-    os.makedirs('./nos_config', exist_ok = True)
-    for i, j in dict.items():
-        ep = 'https://' + ahost + '/api/blueprints/{0}/nodes/{1}/config-rendering'.format(bp_id, i)
-        resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-        with open('./nos_config/' + j + '.conf','w') as f: print((resp['config']), file = f)
-    now = re.sub('[ :]','-', datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-    shutil.make_archive(now, 'zip', 'nos_config')
 
-nos_config()
+class GetNosConfig(object):
+
+    def __init__(self):
+        pass
+
+    def get_nos_config(self):
+        """
+        Save NOS configs of spine and leaf on local as zip file.
+        """
+        os.makedirs('./nos_config', exist_ok=True)
+        for system in AosApi().bp_qe_post_system_role_spineleaf(token, bp_id, address)['items']:
+            url = 'https://' + address \
+                  + '/api/blueprints/{blueprint_id}/nodes/{node_id}/config-rendering'\
+                  .format(blueprint_id = bp_id, node_id = system['system']['id'])
+            with open('./nos_config/' + system['system']['hostname'] + '.conf', 'w') as config:
+                print((requests.get(url, headers = {'AUTHTOKEN': token,
+                                                    'Content-Type': 'application/json'},
+                                    verify = False).json()['config']), file = config)
+        now = re.sub('[ :]', '-', datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+        shutil.make_archive(now, 'zip', 'nos_config')
+        shutil.rmtree('./nos_config/')
+
+if __name__ == '__main__':
+    GetNosConfig().get_nos_config()
+

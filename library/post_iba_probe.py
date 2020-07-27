@@ -1,122 +1,181 @@
-# --- import ---
-import common
+import json
+import glob
+import os
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import sys
-import json
-import glob
-import os
+import tarfile
 import time
 from zipfile import ZipFile
-import tarfile
 
-ahost = common.args[1]
-aos_dev_sdk = common.args[3]
-l = common.blueprint()
-token = l[0]
-bp_id = l[1]
+from common import LoginBlueprint
+from common import AosApi
 
-class Post_iba_probes:
+token_bp_id_address = LoginBlueprint().blueprint()
+token = token_bp_id_address[0]
+bp_id = token_bp_id_address[1]
+address = token_bp_id_address[2]
+
+
+class PostIbaProbes(object):
+
     def __init__(self):
-        self.packages_get = common.packages_get(token)
-        self.system_agents_get = common.system_agents_get(token)
-        self.telemetry_service_registry_get = common.telemetry_service_registry_get(token)
-        self.iba_storage_schema_path = common.iba_storage_schema_path
-        self.app_schema = {"service_name": "", "version": "", "storage_schema_path": "", "description": "", "application_schema":""}
-    # Post Packages on AOS
+        pass
+
     def post_package(self):
-        # Unzip args[3]
-        with ZipFile('./' + aos_dev_sdk) as myzip: myzip.extractall()
-        # Upload whl
-        file_list = [ os.path.basename(i) for i in glob.glob('./dist/aosstdcollectors_custom_*.whl') ]
+        """
+        Unzip AosDev SDK, upload whl_file to AOS one by one.
+        """
+        with ZipFile('./' + sys.argv[3]) as myzip: myzip.extractall()
+        whl_file_list = [os.path.basename(whl_file) for whl_file in \
+                         glob.glob('./dist/aosstdcollectors_custom_*.whl')]
         print ('##### Upload IBA Custom Collectors #####')
-        for i in file_list:
-            file = './dist/{0}'.format(i)
-            data = open(file, 'rb').read()
-            ep = 'https://' + ahost + '/api/packages?packagename={0}'.format(i)
-            resp = requests.post(ep, data = data, headers={'AUTHTOKEN':token, 'Content-Type': 'application/octet-stream'}, verify=False)
-            if str(resp.status_code) == '201': print ('----- Upload {0}'.format(i))
+        for whl_file in whl_file_list:
+            resp = requests.post(url = 'https://' + address + '/api/packages?packagename=' + whl_file,
+                                 data = open('./dist/' + whl_file, 'rb').read(),
+                                 headers={'AUTHTOKEN' : token, 'Content-Type': \
+                                          'application/octet-stream'}, verify=False)
+            if str(resp.status_code) == '201':
+                print ('----- Upload ' + whl_file)
             else:
-                print ('----- Error: HTTP request failed {0}'.format(i))
+                print ('----- Error: HTTP request failed ' + whl_file)
                 sys.exit()
         print ('##### Done #####')
         time.sleep(1)
 
-    # Install Packages to Agents
     def install_package(self):
-        print ('##### Install Package to Agents #####')
-        # Get package list uploaded on AOS
-        package_list = [ i['name'] for i in self.packages_get['items']]
-        # Patch packages to Agents
+        """
+        Install IBA collector package under the following condition
+            'job state' == 'success'
+            'operation mode' == 'full_control'
+        """
+        print('##### Install Package to Agents #####')
         agent_id_list = []
-        for i in self.system_agents_get['items']:
-            if i['status']['operation_mode'] == 'full_control':
-                agent_id_list.append(i['id'])
-                for j in package_list:
-                    # e.g. 'eos' in 'aosstdcollectors-custom-eos'
-                    if i['status']['platform'] in j:
-                        list = []
-                        list.append(j)
-                        payload = {"packages":list, "operation_mode": "full_control" }
-                        ep = 'https://' + ahost + '/api/system-agents/{agent_id}'.format(agent_id = i['id'])
-                        resp = requests.patch(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False)
-                        if str(resp.status_code) == '202': print ('----- Request has been accepted for processing on {0}'.format(i['device_facts']['hostname']))
+        package_list = [package['name'] for package in AosApi().packages_get(token, bp_id, address)['items']]
+        for agent in AosApi().system_agents_get(token, bp_id, address)['items']:
+            if agent['status']['operation_mode'] == 'full_control' and agent['status']['state'] == 'success':
+                for package in package_list:
+                    if agent['status']['platform'] in package:
+                        payload = {'packages': package.split(), 'operation_mode': 'full_control'}
+                        resp = requests.patch('https://' + address + '/api/system-agents/' + agent['id'],
+                                              headers={'AUTHTOKEN': token, 'Content-Type': 'application/json'},
+                                              data=json.dumps(payload), verify=False)
+                        if str(resp.status_code) == '202':
+                            print('----- Request has been accepted for processing on '
+                                  + agent['device_facts']['hostname'])
                         else:
-                            print ('----- Error: Request is not accepted on {0}'.format(i['device_facts']['hostname']))
+                            print ('----- Error: Request is not accepted on '
+                                   + agent['device_facts']['hostname'])
                             sys.exit()
-        print ('----- Please wait...Installing now')
-        time.sleep(10)
-        # Check package installed status
+            agent_id_list.append(agent['id'])
+        time.sleep(5)
+        """
+        Check package installed status
+        """
         while len(agent_id_list) != 0:
-            system_agents_id_get = common.system_agents_id_get(token, agent_id_list[0])
-            for i in system_agents_id_get['telemetry_ext_status']['packages_installed']:
-                if 'aosstdcollectors-custom' in i:
+            system_agents = AosApi().system_agents_id_get(token, bp_id, address, agent_id_list[0])
+            for package in system_agents['telemetry_ext_status']['packages_installed']:
+                if 'aosstdcollectors-custom' in package:
                     agent_id_list.remove(agent_id_list[0])
-                    print ('----- Package installed on {0}'.format(system_agents_id_get['device_facts']['hostname']))
+                    print ('----- Package installed on ' + system_agents['device_facts']['hostname'])
                 else:
-                    print ('----- Not installed yet {0}'.format(system_agents_id_get['device_facts']['hostname']))
-                    time.sleep(0.5)
+                    print ('----- Not installed yet ' + system_agents['device_facts']['hostname'])
+                    time.sleep(1)
         print ('##### Done #####')
         time.sleep(1)
 
-    # Install Service Registry
     def install_service_registry(self):
+        """
+        Install service registry from json_schemas.postXXX unziped as 'dist' directory.
+        :payload: post data for '/api/telemetry-service-registry'
+        :iba_storage_schema_path: Confirm the key i.e.'generic' from original json file.
+        """
+        payload = {"service_name": "",
+                   "version": "",
+                   "storage_schema_path": "",
+                   "description": "",
+                   "application_schema": ""}
+        iba_storage_schema_path = {
+            'iba_integer_data': ['table_usage', 'sfp', 'power_supply',
+                                 'dot1x_hosts', 'evpn_vxlan_type5',
+                                 'resource_util', 'evpn_vxlan_type3',
+                                 'anycast_rp', 'vxlan_inf',
+                                 'mlag_domai', 'bgp_route', 'disk_util',
+                                 'sdwan_policy_rule'],
+            'generic': ['device_info', 'vtep_counters', 'traceroute',
+                        'acl_stats', 'interface_iba',
+                        'mlag_domain', 'vlan', 'pim_rp', 'bgp_iba',
+                        'vxlan_address_table',
+                        'multicast_info', 'route_count', 'ping', 'bgp_vrf',
+                        'multicast_groups',
+                        'vrf', 'evpn_type5', 'vxlan_info', 'interface_buffer',
+                        'lldp_details',
+                        'evpn_type3', 'process_restart_time',
+                        'interface_details', 'resource_usage',
+                        'pim_neighbor_count', 'stp', 'site_device_group',
+                        'site_device'],
+            'interface_counters': ['interface_counters'],
+            'arp': ['arp'],
+            'hostname': ['hostname'],
+            'iba_string_data': ['dot1x', 'ospf_state'],
+            'mlag': ['mlag'],
+            'bgp': ['bgp'],
+            'route': ['route'],
+            'xcvr': ['xcvr'],
+            'graph': ['virtual_infra'],
+            'interface': ['interface'],
+            'lldp': ['lldp'],
+            'mac': ['mac'],
+            'lag': ['lag']
+        }
         print ('##### Install Service Registry from json_schemas.postXXX #####')
         json_schemas = glob.glob('./dist/json_schemas.post*.tar.gz')[0]
         with tarfile.open(json_schemas, 'r') as tar: tar.extractall('./dist')
-        # Create list of json files in 'dist'
-        json_file_list = [ os.path.basename(i) for i in glob.glob('./dist/*.json') ]
-        # Read content of .json, make payload and import service registry entry
-        for i in json_file_list:
-            with open('./dist/{0}'.format(i)) as f: json_content = f.read()
-            self.app_schema['service_name'] = i.replace('.json', '')
-            self.app_schema['application_schema'] = json.loads(json_content)
-            for j in self.iba_storage_schema_path.items():
-                if i.replace('.json', '') in j[1]:
-                    self.app_schema['storage_schema_path'] = 'aos.sdk.telemetry.schemas.' + j[0]
+        for json_file in [ os.path.basename(json_file) for json_file in glob.glob('./dist/*.json') ]:
+            with open('./dist/' + json_file) as f: json_content = f.read()
+            payload['service_name'] = json_file.replace('.json', '')
+            payload['application_schema'] = json.loads(json_content)
+            for schema_path in iba_storage_schema_path.items():
+                if json_file.replace('.json', '') in schema_path[1]:
+                    payload['storage_schema_path'] = 'aos.sdk.telemetry.schemas.' + schema_path[0]
                     break
-            ep = 'https://' + ahost + '/api/telemetry-service-registry'
-            resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(self.app_schema), verify=False)
-            if resp.status_code == 422: print ('----- Error: No storage schema path {0}. Update common.py'.format(i.replace('.json', '')))
-            elif resp.status_code == 409: print ('----- {0} is already installed'.format(i.replace('.json', '')))
-            else: print ('----- Install Service Registry {0}'.format(i))
+                resp = requests.post('https://' + address + '/api/telemetry-service-registry',
+                                     headers={'AUTHTOKEN': token,
+                                              'Content-Type': 'application/json'},
+                                     data=json.dumps(payload), verify=False)
+            if resp.status_code == 422:
+                print ('----- Error: No storage schema path ' + json_file.replace('.json', '')
+                       + '. Update iba_storage_schema_path')
+            elif resp.status_code == 409:
+                print ('----- ' + json_file.replace('.json', '') + ' is already installed.')
+            else:
+                print ('----- Install Service Registry ' + json_file)
         print ('##### Done #####')
         time.sleep(1)
 
-    # Create IBA Probes on BP
     def create_probe(self):
+        """
+        Install all probes in 'probes' directory.
+        :return:
+        """
         print ('##### Create Probes #####')
-        probe_files = glob.glob('./probes/*.json')
-        for i in probe_files:
-            with open(i) as f: json_content = f.read()
-            ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}/probes'.format(blueprint_id = bp_id)
-            resp = requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json_content, verify=False)
-            if resp.status_code == 201: print ('----- Probe {0} Created'.format(i.replace('./probes/', '')))
-            else: print ('----- Error: Probe {0} Install Failed'.format(i.replace('./probes/', '')))
+        for probe_file in glob.glob('./probes/*.json'):
+            with open(probe_file) as f: json_content = f.read()
+            resp = requests.post('https://' + address + '/api/blueprints/' + bp_id + '/probes',
+                                 headers={'AUTHTOKEN':token, 'Content-Type':'application/json'},
+                                 data=json_content, verify=False)
+            if resp.status_code == 201:
+                print ('----- Probe ' + probe_file.replace('./probes/', '') + ' Created.')
+            else:
+                print ('----- Error: Probe ' + probe_file.replace('./probes/', '')
+                       + ' Install Failed.')
         print ('##### Done #####')
 
-Post_iba_probes().post_package()
-Post_iba_probes().install_package()
-Post_iba_probes().install_service_registry()
-Post_iba_probes().create_probe()
+
+if __name__ == '__main__':
+    PostIbaProbes().post_package()
+    PostIbaProbes().install_package()
+    PostIbaProbes().install_service_registry()
+    PostIbaProbes().create_probe()
+

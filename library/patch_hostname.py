@@ -1,24 +1,36 @@
-# --- import ---
-import common
+import csv
+import json
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-import json
-import csv
 
-ahost = common.args[1]
-l = common.blueprint()
-token = l[0]
-bp_id = l[1]
+from common import LoginBlueprint
 
-# Patch Hostname from CSV (switch, server)
-def patch_hostname():
-    with open('hostname_label.csv','r') as f:
-        next(f)
-        r = csv.reader(f)
-        for i in r:
-            ep = 'https://' + ahost + '/api/blueprints/{0}/nodes/{1}'.format(bp_id, i[0])
-            payload={'hostname':i[5]}
-            requests.patch(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False)
 
-patch_hostname()
+class PatchHostname(object):
+
+    def __init__(self):
+        """
+        Import AOS Token, Blueprint ID, AOS Address.
+        """
+        self.token_bp_id_address = LoginBlueprint().blueprint()
+
+    def patch_hostname(self):
+        """
+        Change hostname of spine, leaf and server by using CSV.
+        """
+        with open('hostname_label.csv', 'r') as file:
+            writer = csv.writer(file)
+            next(file)
+            rows = csv.reader(file)
+            for line in rows:
+                requests.patch('https://' + self.token_bp_id_address[2] \
+                               + '/api/blueprints/{blueprint_id}/nodes/{node_id}'\
+                               .format(blueprint_id = self.token_bp_id_address[1], node_id = line[0]),
+                               headers={'AUTHTOKEN': self.token_bp_id_address[0],
+                                        'Content-Type': 'application/json'},
+                               data=json.dumps({'hostname': line[4]}), verify=False)
+
+if __name__ == '__main__':
+    PatchHostname().patch_hostname()
+

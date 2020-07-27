@@ -1,31 +1,41 @@
-# --- import ---
-import common
+import json
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-import json
 import sys
 
-ahost = common.args[1]
-l = common.blueprint()
-token = l[0]
-bp_id = l[1]
-bp_qe_post_system_systemtype = common.bp_qe_post_system_systemtype(token, bp_id)
-deploy_mode = common.deploy_mode
+import common
+from common import LoginBlueprint
+from common import AosApi
 
-# Get node id list (server) and patch deploy mode
-def patch_deploy_mode():
-    # Create payload
-    input_mode = input('deploy_mode:')
-    if input_mode in deploy_mode:
-        payload = {'nodes': {}}
-        for i in bp_qe_post_system_systemtype['items']:
-            payload['nodes'][i['system']['id']] = {'deploy_mode':input_mode}
-    else:
-        print ('Error: Wrong deploy mode')
-        sys.exit()
-    # Patch deploy mode
-    ep = 'https://' + ahost + '/api/blueprints/{blueprint_id}'.format(blueprint_id = bp_id)
-    requests.patch(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(payload), verify=False)
+token_bp_id_address = LoginBlueprint().blueprint()
+token = token_bp_id_address[0]
+bp_id = token_bp_id_address[1]
+address = token_bp_id_address[2]
 
-patch_deploy_mode()
+
+class PatchDeployMode(object):
+
+    def __init__(self):
+        pass
+
+    def patch_deploy_mode(self):
+        """
+        Change server deploy mode.
+        """
+        input_mode = input('deploy_mode:')
+        if input_mode in common.deploy_mode:
+            payload = {'nodes': {}}
+            for system in AosApi().bp_qe_post_system_systemtype_server(token, bp_id, address)['items']:
+                payload['nodes'][system['system']['id']] = {'deploy_mode': input_mode}
+            requests.patch('https://' + address + '/api/blueprints/{blueprint_id}'\
+                           .format(blueprint_id = bp_id),
+                           headers = {'AUTHTOKEN': token, 'Content-Type': 'application/json'},
+                           data=json.dumps(payload), verify=False)
+        else:
+            print ('Error: Wrong deploy mode')
+            sys.exit()
+
+if __name__ == '__main__':
+    PatchDeployMode().patch_deploy_mode()
+

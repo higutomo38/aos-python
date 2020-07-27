@@ -1,20 +1,19 @@
-# --- import ---
-import common
-import sys
+import datetime
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-import json
 import openpyxl
 from openpyxl.styles.alignment import Alignment
-import datetime
-from netaddr import *
-now = datetime.datetime.now()
-now.strftime('%Y-%m-%d %H:%M:%S')
 
-l = common.blueprint()
-token = l[0]
-bp_id = l[1]
+from common import LoginBlueprint
+from common import AosApi
+
+token_bp_id_address = LoginBlueprint().blueprint()
+token = token_bp_id_address[0]
+bp_id = token_bp_id_address[1]
+address = token_bp_id_address[2]
+
+
 bp_cabling_map_get = common.bp_cabling_map_get(token, bp_id)
 bp_racks_get = common.bp_racks_get(token, bp_id)
 system_agents_get = common.system_agents_get(token)
@@ -26,16 +25,16 @@ bp_qe_post_system = common.bp_qe_post_system(token, bp_id)
 bp_qe_post_vn = common.bp_qe_post_vn(token, bp_id)
 
 
-# get [system id, hardware] list
 def graph_system_interfacemap():
     d = {}
     for i in bp_qe_post_system_interfacemap['items']:
         d[i['system']['system_id']] = i['map']['device_profile_id']
-    #  print (json.dumps(d, indent=4))
     return d
 
 # modify xlsx file
-def config_xlsx(data, ll, sheetname, ws):
+def set_xlsx(data, ll, sheetname, ws):
+    now = datetime.datetime.now()
+    now.strftime('%Y-%m-%d %H:%M:%S')
     ws['A1'] = sheetname
     ws['A1'].font = openpyxl.styles.Font(bold=True, size=16)
     ws['A2'] = ''
@@ -110,7 +109,7 @@ class ConfigSheet:
         # create xlsx file
         wb = openpyxl.Workbook()
         ws = wb.create_sheet(self.list[0])
-        config_xlsx(data, ll, self.list[0], ws)
+        set_xlsx(data, ll, self.list[0], ws)
         # Remove 'Sheet'
         wb.remove(wb.worksheets[0])
         wb.save('ip_sheet.xlsx')
@@ -144,7 +143,7 @@ class ConfigSheet:
         ll = [['' if i is None else i for i in j] for j in ll]
         wb = openpyxl.load_workbook('ip_sheet.xlsx')
         ws = wb.create_sheet(self.list[1])
-        config_xlsx(data, ll, self.list[1], ws)
+        set_xlsx(data, ll, self.list[1], ws)
         wb.save('ip_sheet.xlsx')
 
     def make_sheet_underlay(self):
@@ -160,7 +159,7 @@ class ConfigSheet:
         ll = [['' if i is None else i for i in j] for j in ll]
         wb = openpyxl.load_workbook('ip_sheet.xlsx')
         ws = wb.create_sheet(self.list[2])
-        config_xlsx(data, ll, self.list[2], ws)
+        set_xlsx(data, ll, self.list[2], ws)
         wb.save('ip_sheet.xlsx')
 
     def make_sheet_overlay(self):
@@ -175,7 +174,7 @@ class ConfigSheet:
                     l = []
         wb = openpyxl.load_workbook('ip_sheet.xlsx')
         ws = wb.create_sheet(self.list[3])
-        config_xlsx(data, ll, self.list[3], ws)
+        set_xlsx(data, ll, self.list[3], ws)
         wb.save('ip_sheet.xlsx')
 
 ConfigSheet().make_sheet_device()

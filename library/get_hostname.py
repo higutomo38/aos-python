@@ -1,25 +1,31 @@
-# --- import ---
-import common
 import csv
 
-l = common.blueprint()
-token = l[0]
-bp_id = l[1]
-bp_node_get_system = common.bp_node_get_system(token, bp_id)
-systems_get = common.systems_get(token)
+from common import LoginBlueprint
+from common import AosApi
 
-# Save Hostname to CSV (switch, server)
-def get_hostname():
-    d = {}
-    with open('hostname_label.csv','w') as f:
-        writer = csv.writer(f)
-        writer.writerow(['ID','Role','System_ID','Management_IP','Hostname','New Hostname or Label'])
-        for i in systems_get['items']:
-            if i['facts']['hw_model'] != '':d[i['device_key']] = i['facts']['mgmt_ipaddr']
-        for i in bp_node_get_system['nodes'].values():
-            if i['role'] == 'spine' or i['role'] == 'leaf':
-                for j in d:
-                    if j == i['system_id']:writer.writerow([i['id'],i['role'],i['system_id'],d[j],i['hostname']])
-            elif i['system_type'] == 'server':writer.writerow([i['id'],i['role'],i['system_id'],'',i['hostname']])
+token_bp_id_address = LoginBlueprint().blueprint()
+token = token_bp_id_address[0]
+bp_id = token_bp_id_address[1]
+address = token_bp_id_address[2]
 
-get_hostname()
+
+class GetHostname(object):
+
+    def __init__(self):
+        pass
+
+    def make_hostname_list(self):
+        """
+        Save hostnames on local CSV file for changing hostname and label.
+        """
+        with open('hostname_label.csv', 'w') as file:
+            writer = csv.writer(file)
+            writer.writerow(
+                ['ID', 'System_ID', 'Role', 'Hostname', 'New Hostname or Label'])
+            for node in AosApi().bp_qe_post_system_role_spineleafl2l3server\
+                        (token, bp_id, address)['items']:
+                node = node['system']
+                writer.writerow([node['id'], node['system_id'], node['role'], node['hostname']])
+
+if __name__ == '__main__':
+    GetHostname().make_hostname_list()

@@ -1,64 +1,84 @@
-# --- import ---
-import common
-import sys
+import ast
+import json
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-import json
-import ast
+import sys
 
-# Check syslog messages of IBA interface flapping
-def check_syslog():
-    f = open('/var/log/syslog','r')
-    line = f.readlines()
-    f.close()
-    list = []
-    # Check only one message
-    for i in line:
-        if 'if_status_flapping' in i:
-            # Divide the message into two
-            i = ast.literal_eval(i.split('msg=')[1])
-            i = i['alert']['probe_alert']['key_value_pairs']
-            for j in i:
-                # Create list ['system_id','interface number']
-                if j['key'] == 'system_id': list.insert(0,j['value'].replace('"',''))
-                elif j['key'] == 'key': list.append(j['value'].replace('"',''))
-            return list # [system id, interface number]
-            sys.exit()
-    sys.exit()
+from common import LoginBlueprint
+from common import AosApi
 
-list = check_syslog()
+token_bp_id_address = LoginBlueprint().blueprint()
+token = token_bp_id_address[0]
+bp_id = token_bp_id_address[1]
+address = token_bp_id_address[2]
 
-ahost = common.args[1]
-l = common.blueprint()
-token = l[0]
-bp_id = l[1]
-bp_node_get_system = common.bp_node_get_system(token, bp_id)
-bp_diff = common.bp_diff_get(token, bp_id)
-configlets_dic = common.bp_configlets_get(token, bp_id)
 
-# get node id from system id
-def node_id_from_system_id():
-    for i in bp_node_get_system['nodes'].values():
-        if i["system_id"] == list[0]: return i["id"], list[1] # (node id, interface number)
+class PostConfigletsIntDown(object):
 
-# post configlets
-def configlets():
-    tupl = node_id_from_system_id()
-    # Check whether adding configlets already exist in current BP or not.
-    for i in configlets_dic['items']:
-        if tupl[0] in i['condition'] and tupl[1] in i['configlet']['generators'][0]['section_condition']: sys.exit()
-    d = open('configlets.json','r')
-    f = json.load(d)
-    d.close()
-    # Check whether uncommited configlets is in BP.
-    if bp_diff['configlet'] == None:
-        f['configlet']['generators'][0]['template_text'] = f['configlet']['generators'][0]['template_text'].replace('x',tupl[1])
-        f['configlet']['generators'][0]['negation_template_text'] = f['configlet']['generators'][0]['negation_template_text'].replace('x',tupl[1])
-        f['condition'] = "id in [\"" + tupl[0] + "\"]"
-        ep = 'https://' + ahost + '/api/blueprints/{0}/configlets'.format(bp_id)
-        requests.post(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, data=json.dumps(f), verify=False)
-    else:
-        sys.exit()
+    def __init__(self):
+        pass
 
-configlets()
+    def check_syslog(self):
+        """
+        Check if there is interface flapping anomary on local '/var/log/syslog'.
+        :return: [system_id, interface_number]
+        """
+        with open('hogehoge.json', 'r') as f:
+            syslogs = f.readlines()
+        sys_int_list = []
+        for syslog in syslogs:
+            if 'if_status_flapping' in syslog:
+                for contents in ast.literal_eval(syslog.split('msg=')[1])['alert']['probe_alert']['key_value_pairs']:
+                    if contents['key'] == 'system_id':
+                        sys_int_list.insert(0, contents['value'].replace('"',''))
+                    elif contents['key'] == 'key':
+                        sys_int_list.append(contents['value'].replace('"',''))
+                return sys_int_list
+                sys.exit()
+
+    def post_intdown_configlets(self):
+        """
+        If there is IBA interface flapping anomaly on 'check_syslog()', shutdown the interface using configlet.
+        If configlet 'Cumulus Linkdown' is already installed, stop running this script.
+        We should translate system_id to node_id as syslog doesn't include node_id.
+        """
+        format = {
+            "configlet": {
+                "display_name": "Cumulus Linkdown",
+                "generators": [
+                    {
+                        "config_style": "cumulus",
+                        "section": "system",
+                        "section_condition": "",
+                        "filename": "",
+                        "template_text": "ifdown x --admin-state",
+                        "negation_template_text": "ifup x"
+                    }
+                ]
+            },
+            "condition": "",
+            "label": "Cumulus Linkdown"
+        }
+        sys_int_list = PostConfigletsIntDown().check_syslog()
+        for node in AosApi().bp_node_get_system(token, bp_id, address)['nodes'].values():
+            if node['system_id'] == sys_int_list[0]:
+                for configlets in AosApi().bp_configlets_get(token, bp_id, address)['items']:
+                    if configlets['configlet']['display_name'] == 'Cumulus Linkdown':
+                        sys.exit()
+                if AosApi().bp_diff_get(token, bp_id, address)['configlet'] == None:
+                    format['configlet']['generators'][0]['template_text'] \
+                        = format['configlet']['generators'][0]['template_text'].replace('x',sys_int_list[1])
+                    format['configlet']['generators'][0]['negation_template_text'] \
+                        = format['configlet']['generators'][0]['negation_template_text'].replace('x', sys_int_list[1])
+                    format['condition'] = "id in [\"" + node['id'] + "\"]"
+                    print (format)
+                    requests.post ('https://' + address + '/api/blueprints/' + bp_id + '/configlets',
+                                   headers={'AUTHTOKEN':token, 'Content-Type':'application/json'},
+                                   data=json.dumps(format), verify=False)
+                sys.exit()
+
+
+if __name__ == '__main__':
+    PostConfigletsIntDown().post_intdown_configlets()
+
