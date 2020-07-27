@@ -97,24 +97,9 @@ class AosApi(object):
                                  headers = {'AUTHTOKEN': token, 'Content-Type': 'application/json'},
                                  data = json.dumps(payload), verify = False).json()
 
-    # def bp_node_system_get(self):
-    #     return self.request_get_format('https://' + self.token_bp_id_address[2] \
-    #                 + '/api/blueprints/{blueprint_id}/nodes?node_type=system'\
-    #                 .format(blueprint_id = self.token_bp_id_address[1]))
-    #
-    # def systems_get(self):
-    #
-    #     return self.request_get_format('https://' + self.token_bp_id_address[2] \
-    #                 + '/api/systems')
-    def packages_get(self, token, bp_id, address):
-        return self.request_get_format(token, bp_id, address, '/api/packages')
-
-    def system_agents_get(self, token, bp_id, address):
-        return self.request_get_format(token, bp_id, address, '/api/system-agents')
-
-    def system_agents_id_get(self, token, bp_id, address, agent_id):
+    def bp_configlets_get(self, token, bp_id, address):
         return self.request_get_format(token, bp_id, address,
-               '/api/system-agents/{agent_id}'.format(agent_id = agent_id))
+               '/api/blueprints/{blueprint_id}/configlets')
 
     def bp_diff_get(self, token, bp_id, address):
         return self.request_get_format(token, bp_id, address,
@@ -123,21 +108,6 @@ class AosApi(object):
     def bp_node_get_system(self, token, bp_id, address):
         return self.request_get_format(token, bp_id, address,
                '/api/blueprints/{blueprint_id}/nodes?node_type=system')
-
-    def bp_configlets_get(self, token, bp_id, address):
-        return self.request_get_format(token, bp_id, address,
-               '/api/blueprints/{blueprint_id}/configlets')
-
-        # def bp_node_get_system(token, bp_id):
-    #     ep = 'https://' + args[1] + '/api/blueprints/{blueprint_id}/nodes?node_type=system'.format(blueprint_id = bp_id)
-    #     resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-    #     return resp
-
-    # # get system-agents-id
-    # def system_agents_id_get(token, agent_id):
-    #     ep = 'https://' + args[1] + '/api/system-agents/{agent_id}'.format(agent_id = agent_id)
-    #     resp = requests.get(ep, headers={'AUTHTOKEN':token, 'Content-Type':'application/json'}, verify=False).json()
-    #     return resp
 
     def bp_qe_post_system_role_spineleaf(self, token, bp_id, address):
         return self.request_post_format\
@@ -157,26 +127,26 @@ class AosApi(object):
                      {"query": "node('system', name='system', "
                                "system_type='server')"})
 
-# deploy_mode = ['deploy','undeploy','ready','drain']
-# iba_storage_schema_path = {
-# 'iba_integer_data':['table_usage', 'sfp', 'power_supply', 'dot1x_hosts', 'evpn_vxlan_type5', 'resource_util', 'evpn_vxlan_type3', 'anycast_rp', 'vxlan_inf', 'mlag_domai', 'bgp_route', 'disk_util', 'sdwan_policy_rule'],
-# 'generic':['device_info', 'vtep_counters', 'traceroute', 'acl_stats', 'interface_iba', 'mlag_domain', 'vlan', 'pim_rp', 'bgp_iba', 'vxlan_address_table', 'multicast_info', 'route_count', 'ping', 'bgp_vrf', 'multicast_groups', 'vrf', 'evpn_type5', 'vxlan_info', 'interface_buffer', 'lldp_details', 'evpn_type3', 'process_restart_time', 'interface_details', 'resource_usage', 'pim_neighbor_count', 'stp', 'site_device_group', 'site_device'],
-# 'interface_counters':['interface_counters'],
-# 'arp':['arp'],
-# 'hostname':['hostname'],
-# 'iba_string_data':['dot1x', 'ospf_state'],
-# 'mlag':['mlag'],
-# 'bgp':['bgp'],
-# 'route':['route'],
-# 'xcvr':['xcvr'],
-# 'graph':['virtual_infra'],
-# 'interface':['interface'],
-# 'lldp':['lldp'],
-# 'mac':['mac'],
-# 'lag':['lag']
-# }
+    def packages_get(self, token, bp_id, address):
+        return self.request_get_format(token, bp_id, address, '/api/packages')
 
+    def system_agents_get(self, token, bp_id, address):
+        return self.request_get_format(token, bp_id, address, '/api/system-agents')
+
+    def system_agents_id_get(self, token, bp_id, address, agent_id):
+        return self.request_get_format(token, bp_id, address,
+               '/api/system-agents/{agent_id}'.format(agent_id = agent_id))
+
+# def bp_node_system_get(self):
+#     return self.request_get_format('https://' + self.token_bp_id_address[2] \
+#                 + '/api/blueprints/{blueprint_id}/nodes?node_type=system'\
+#                 .format(blueprint_id = self.token_bp_id_address[1]))
 #
+# def systems_get(self):
+#
+#     return self.request_get_format('https://' + self.token_bp_id_address[2] \
+#                 + '/api/systems')
+
 # ### Platform
 # ## blueprints
 # # get diff
