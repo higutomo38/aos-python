@@ -1,0 +1,65 @@
+{
+  "label": "Detect frr restart",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "Collect service restart time",
+      "outputs": {
+        "out": "Collect service restart time"
+      },
+      "properties": {
+        "graph_query": "node('system', name='system', role=is_in(['leaf', 'spine', 'superspine']), deploy_mode='deploy')",
+        "data_type": "ns",
+        "service_interval": "5",
+        "service_name": "process_restart_time",
+        "execution_count": "-1",
+        "system_id": "system.system_id",
+        "service_input": "'{\"services\":[\"frr\"]}'",
+        "key": "'seconds_since_last_frr_restart'",
+        "enable_streaming": false
+      }
+    },
+    {
+      "inputs": {
+        "in": "Collect service restart time"
+      },
+      "type": "range_check",
+      "name": "Check if frr was restarted in last 10 seconds",
+      "outputs": {
+        "out": "Check if frr was restarted in last 10 seconds"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "max": 10
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "Check if frr was restarted in last 10 seconds"
+      },
+      "type": "accumulate",
+      "name": "History of all restarts",
+      "outputs": {
+        "out": "History of all restarts"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 1024,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ],
+  "stages": [
+    {
+      "name": "Collect service restart time",
+      "units": "seconds"
+    }
+  ]
+}

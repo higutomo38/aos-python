@@ -1,0 +1,18 @@
+{
+    "properties": {
+        "identity": {
+            "pattern": "^[A-Za-z0-9_-]+\\|[^_]+$", 
+            "type": "string"
+        }, 
+        "value": {
+            "description": "Number of routes in a VRF",
+            "pattern": "^[0-9]+$", 
+            "type": "string"
+        }
+    }, 
+    "required": [
+        "identity", 
+        "value"
+    ], 
+    "type": "object"
+}

@@ -1,0 +1,18 @@
+{
+    "properties": {
+        "identity": {
+            "type": "string"
+        }, 
+        "value": {
+            "enum": [
+                "1"
+            ], 
+            "type": "string"
+        }
+    }, 
+    "required": [
+        "identity", 
+        "value"
+    ], 
+    "type": "object"
+}

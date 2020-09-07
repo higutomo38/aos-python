@@ -1,0 +1,55 @@
+{
+    "properties": {
+        "identity": {
+            "oneOf": [
+                {
+                    "pattern": "[^\\|]+\\|num_mcast_routes$"
+                },
+                {
+                    "pattern": "[^\\|]+\\|num_mcast_sources$"
+                },
+                {
+                    "pattern": "[^\\|]+\\|num_mcast_groups$"
+                },
+                {
+                    "pattern": "[^\\|]+\\|num_arp_entries$"
+                },
+                {
+                    "pattern": "[^\\|]+\\|num_ip_routes$"
+                },
+                {   
+                    "pattern": "^mcast_data$" 
+                },
+                { 
+                    "pattern": "^arp_entries$"
+                },
+                {
+                    "pattern": "^ip_routes$"
+                }
+            ]
+        },  
+        "value": {
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "enum": [
+                                "num_mcast_groups",
+                                "num_mcast_routes",
+                                "num_mcast_sources"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }, 
+    "required": [
+        "identity", 
+        "value"
+    ], 
+    "type": "object"
+}

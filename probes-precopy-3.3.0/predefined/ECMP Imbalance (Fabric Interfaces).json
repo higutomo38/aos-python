@@ -1,0 +1,243 @@
+{
+  "label": "ECMP Imbalance (Fabric Interfaces)",
+  "description": "The probe calculates ECMP imbalance on fabric ports",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "if_counter",
+      "name": "leaf fabric interface traffic",
+      "outputs": {
+        "out": "leaf_fabric_int_traffic"
+      },
+      "properties": {
+        "graph_query": "node(\"system\", name=\"system\", deploy_mode=\"deploy\", role=\"leaf\").out(\"hosted_interfaces\").node(\"interface\", name=\"iface\", if_name=not_none()).out(\"link\").node(\"link\", link_type=\"ethernet\", name=\"link\").in_(\"link\").node(\"interface\").in_(\"hosted_interfaces\").node(\"system\", role=\"spine\", deploy_mode=\"deploy\")",
+        "label": "system.label",
+        "interface": "iface.if_name",
+        "link_speed": "functions.speed_to_bits(link.speed)",
+        "system_id": "system.system_id",
+        "enable_streaming": false,
+        "counter_type": "tx_bps"
+      }
+    },
+    {
+      "inputs": {
+        "in": "leaf_fabric_int_traffic"
+      },
+      "type": "accumulate",
+      "name": "leaf fabric interface history",
+      "outputs": {
+        "out": "leaf_fab_int_time_series"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 1024,
+        "graph_query": [],
+        "total_duration": 300
+      }
+    },
+    {
+      "inputs": {
+        "in": "leaf_fabric_int_traffic"
+      },
+      "type": "periodic_average",
+      "name": "leaf fabric interface traffic average",
+      "outputs": {
+        "out": "leaf_fab_int_tx_avg"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "period": 30,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "leaf_fab_int_tx_avg"
+      },
+      "type": "std_dev",
+      "name": "leaf fabric interface std-dev",
+      "outputs": {
+        "out": "leaf_fab_int_std_dev"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "group_by": [
+          "system_id",
+          "label",
+          "link_speed"
+        ],
+        "ddof": 0
+      }
+    },
+    {
+      "inputs": {
+        "numerator": "leaf_fab_int_std_dev"
+      },
+      "type": "ratio",
+      "name": "std-dev percentage",
+      "outputs": {
+        "out": "std_dev_percentage"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "denominator": "context.link_speed",
+        "significant_keys": [],
+        "multiplier": 100
+      }
+    },
+    {
+      "inputs": {
+        "in": "std_dev_percentage"
+      },
+      "type": "accumulate",
+      "name": "std-dev percentage history",
+      "outputs": {
+        "out": "std_dev_percentage_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 1024,
+        "graph_query": [],
+        "total_duration": 300
+      }
+    },
+    {
+      "inputs": {
+        "in": "std_dev_percentage_history"
+      },
+      "type": "range_check",
+      "name": "live ecmp imbalance",
+      "outputs": {
+        "out": "live_ecmp_imbalance"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "min": 21
+        },
+        "raise_anomaly": false,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "live_ecmp_imbalance"
+      },
+      "type": "time_in_state_check",
+      "name": "sustained ecmp imbalance",
+      "outputs": {
+        "out": "system_imbalance"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "time_window": 300,
+        "state_range": {
+          "\"true\"": [
+            {
+              "min": 131
+            }
+          ]
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "system_imbalance"
+      },
+      "type": "accumulate",
+      "name": "system imbalance history",
+      "outputs": {
+        "out": "system_imbalance_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 1024,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    },
+    {
+      "inputs": {
+        "in": "system_imbalance"
+      },
+      "type": "match_count",
+      "name": "systems imbalanced count",
+      "outputs": {
+        "out": "system_imbalance_count"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "group_by": [],
+        "reference_state": "true"
+      }
+    },
+    {
+      "inputs": {
+        "in": "system_imbalance_count"
+      },
+      "type": "range_check",
+      "name": "imbalanced system count out of range",
+      "outputs": {
+        "out": "imbalanced_system_count_out_of_range"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "min": 2
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "imbalanced_system_count_out_of_range"
+      },
+      "type": "accumulate",
+      "name": "imbalanced system count anomaly history",
+      "outputs": {
+        "out": "imbalanced_system_count_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 1024,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ],
+  "stages": [
+    {
+      "name": "system_imbalance_count",
+      "description": "Number of systems with ECMP imbalance."
+    },
+    {
+      "name": "std_dev_percentage",
+      "units": "%"
+    },
+    {
+      "name": "leaf_fab_int_time_series",
+      "units": "bps"
+    },
+    {
+      "name": "leaf_fabric_int_traffic",
+      "units": "bps"
+    },
+    {
+      "name": "leaf_fab_int_tx_avg",
+      "units": "bps"
+    },
+    {
+      "name": "std_dev_percentage_history",
+      "units": "%"
+    },
+    {
+      "name": "leaf_fab_int_std_dev",
+      "units": "bps"
+    }
+  ]
+}

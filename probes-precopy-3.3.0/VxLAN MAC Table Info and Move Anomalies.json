@@ -1,0 +1,100 @@
+{
+  "label": "VxLAN MAC Table Info and Move Anomalies",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "Count of macs with multiple moves",
+      "outputs": {
+        "out": "vxlan_count_of_macs_with_multiple_moves"
+      },
+      "properties": {
+        "graph_query": "match(node('system', name='leaf', role='leaf', deploy_mode='deploy').out('hosted_vn_instances').node('vn_instance', name='vni').out('instantiates').node('virtual_network', name='vn', vn_type='vxlan'))",
+        "data_type": "ns",
+        "service_interval": "120",
+        "service_name": "vxlan_address_table",
+        "vni": "vn.vn_id",
+        "execution_count": "-1",
+        "system_id": "leaf.system_id",
+        "service_input": "\"\"",
+        "key": "'vlan=%s|count_of_macs_with_multiple_moves' % (vni.vlan_id)",
+        "enable_streaming": false
+      }
+    },
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "VxLAN MAC Table Size",
+      "outputs": {
+        "out": "vxlan_mac_table_size"
+      },
+      "properties": {
+        "graph_query": "match(node('system', name='leaf', role='leaf', deploy_mode='deploy').out('hosted_vn_instances').node('vn_instance', name='vni').out('instantiates').node('virtual_network', name='vn', vn_type='vxlan'))",
+        "data_type": "ns",
+        "service_interval": "120",
+        "service_name": "vxlan_address_table",
+        "vni": "vn.vn_id",
+        "execution_count": "-1",
+        "system_id": "leaf.system_id",
+        "service_input": "\"\"",
+        "key": "'vlan=%s|table_size' % (vni.vlan_id)",
+        "enable_streaming": false
+      }
+    },
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "VxLAN MACs with multiple moves",
+      "outputs": {
+        "out": "vxlan_macs_with_multiple_moves"
+      },
+      "properties": {
+        "graph_query": "match(node('system', name='leaf', role='leaf', deploy_mode='deploy').out('hosted_vn_instances').node('vn_instance', name='vni').out('instantiates').node('virtual_network', name='vn', vn_type='vxlan'))",
+        "data_type": "ts",
+        "service_interval": "120",
+        "service_name": "vxlan_address_table",
+        "vni": "vn.vn_id",
+        "execution_count": "-1",
+        "system_id": "leaf.system_id",
+        "service_input": "\"\"",
+        "key": "'vlan=%s|macs_with_multiple_moves' % (vni.vlan_id)",
+        "enable_streaming": false
+      }
+    },
+    {
+      "inputs": {
+        "in": "vxlan_count_of_macs_with_multiple_moves"
+      },
+      "type": "range_check",
+      "name": "MAC multi-move anomalies",
+      "outputs": {
+        "out": "vxlan_move_anomalies"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "min": 1
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "vxlan_move_anomalies"
+      },
+      "type": "accumulate",
+      "name": "VxLAN MAC move anomaly history",
+      "outputs": {
+        "out": "vxlan_address_table_anomaly_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ]
+}

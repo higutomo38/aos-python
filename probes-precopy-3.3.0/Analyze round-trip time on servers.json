@@ -1,0 +1,128 @@
+{
+  "label": "Analyze round-trip time on servers",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "Avg round-trip time from servers in nanoseconds",
+      "outputs": {
+        "out": "rtt_avg"
+      },
+      "properties": {
+        "graph_query": "match(node('system', name='system', role=is_in(['l2_server', 'l3_server']), system_id=not_none()))",
+        "data_type": "ns",
+        "service_interval": "120",
+        "service_name": "ping",
+        "execution_count": "-1",
+        "role": "system.role",
+        "service_input": "\"\"",
+        "key": "'1.1.1.1_round_trip_avg'",
+        "enable_streaming": false,
+        "system_id": "system.system_id"
+      }
+    },
+    {
+      "inputs": {
+        "in": "rtt_avg"
+      },
+      "type": "range_check",
+      "name": "Detect slow rtt",
+      "outputs": {
+        "out": "has_slow_rtt"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "min": 5001
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "rtt_avg"
+      },
+      "type": "accumulate",
+      "name": "History of average round-trip time",
+      "outputs": {
+        "out": "rtt_avg_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    },
+    {
+      "inputs": {
+        "in": "rtt_avg"
+      },
+      "type": "std_dev",
+      "name": "Standard deviation of rtt across servers",
+      "outputs": {
+        "out": "server_rtt_avg_stddev"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "group_by": [
+          "role"
+        ],
+        "ddof": 0
+      }
+    },
+    {
+      "inputs": {
+        "in": "has_slow_rtt"
+      },
+      "type": "accumulate",
+      "name": "Anomaly history of slow rtt",
+      "outputs": {
+        "out": "slow_rtt_anomaly_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    },
+    {
+      "inputs": {
+        "in": "server_rtt_avg_stddev"
+      },
+      "type": "range_check",
+      "name": "Detect imbalance in rtt among servers",
+      "outputs": {
+        "out": "has_high_rtt_stddev"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "min": 5001
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "has_high_rtt_stddev"
+      },
+      "type": "accumulate",
+      "name": "Anomaly history of imbalance in rtt",
+      "outputs": {
+        "out": "high_rtt_stddev_anomaly_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ]
+}

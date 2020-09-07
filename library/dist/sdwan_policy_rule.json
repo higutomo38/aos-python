@@ -1,0 +1,36 @@
+{
+  "storage_schema_path": "aos.sdk.telemetry.schemas.iba_integer_data",
+  "properties": {
+    "value": {
+      "type": "integer"
+    },
+    "key": {
+      "required": [
+        "device_id",
+        "rule_name",
+        "metric"
+      ],
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "rule_name": {
+          "type": "string"
+        },
+        "metric": {
+          "enum": [
+            "hit-count",
+            "exists"
+          ],
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "key",
+    "value"
+  ],
+  "type": "object"
+}

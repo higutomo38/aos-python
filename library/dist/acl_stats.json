@@ -1,0 +1,19 @@
+{
+    "properties": {
+        "identity": {
+            "description": "ACL Name and Rule Text Separated by Pipe (|)",
+            "pattern": "^[ a-zA-Z0-9_./-]+?\\|[ a-zA-Z0-9_./-]+$",
+            "type": "string"
+        },
+        "value": {
+            "description": "Packets per Second Delta",
+            "pattern": "^[0-9-.e]+$",
+            "type": "string"
+        }
+    }, 
+    "required": [
+        "identity", 
+        "value"
+    ], 
+    "type": "object"
+}

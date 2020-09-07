@@ -1,0 +1,67 @@
+{
+    "definitions": {
+        "vlanString": {
+            "pattern": "^vlan=[1-9][0-9]*\\|[^\\|]+$"
+        }, 
+        "vniString": {
+            "pattern": "[^\\|]+\\|vni=[1-9][0-9]*$"
+        }, 
+        "vtepCountString": {
+            "pattern": "[^\\|]+\\|vtep_count=[1-9][0-9]*$"
+        }, 
+        "vtepString": {
+            "pattern": "[^\\|]+\\|vtep=((0|([1-9][0-9]?)|(1[0-9]{2})|(2([0-4][0-9]))|(25[0-5]))\\.){3}(0|([1-9][0-9]?)|(1[0-9]{2})|(2([0-4][0-9]))|(25[0-5]))$"
+        }, 
+        "vtepsString": {
+            "pattern": "[^\\|]+\\|vteps$"
+        }
+    }, 
+    "properties": {
+        "identity": {
+            "oneOf": [
+                {
+                    "pattern": "^protocol_status$"
+                }, 
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/vlanString"
+                        }, 
+                        {
+                            "oneOf": [
+                                {
+                                    "$ref": "#/definitions/vniString"
+                                }, 
+                                {
+                                    "$ref": "#/definitions/vtepCountString"
+                                }, 
+                                {
+                                    "$ref": "#/definitions/vtepsString"
+                                }, 
+                                {
+                                    "$ref": "#/definitions/vtepString"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ], 
+            "type": "string"
+        }, 
+        "value": {
+            "oneOf": [
+                {
+                    "type": "string"
+                }, 
+                {
+                    "type": "null"
+                }
+            ]
+        }
+    }, 
+    "required": [
+        "identity", 
+        "value"
+    ], 
+    "type": "object"
+}

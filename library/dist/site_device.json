@@ -1,0 +1,33 @@
+{
+  "storage_schema_path": "aos.sdk.telemetry.schemas.iba_string_data",
+  "properties": {
+    "value": {
+      "type": "string"
+    },
+    "key": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "property": {
+          "enum": [
+            "label",
+            "site_id",
+            "device_group_id"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "device_id",
+        "property"
+      ]
+    }
+  },
+  "required": [
+    "key",
+    "value"
+  ],
+  "type": "object"
+}

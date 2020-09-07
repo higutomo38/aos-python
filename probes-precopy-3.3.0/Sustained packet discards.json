@@ -1,0 +1,153 @@
+{
+  "label": "Sustained packet discards",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "if_counter",
+      "name": "Egress packet discard rate",
+      "outputs": {
+        "out": "egress_pkt_discard_rate"
+      },
+      "properties": {
+        "description": "interface.description",
+        "graph_query": "match(node('system', name='system', system_id=not_none(), deploy_mode='deploy', role=is_in(['leaf', 'spine'])).out('hosted_interfaces').node('interface', if_type=is_in(['ip','ethernet']), name='interface'))",
+        "interface": "interface.if_name",
+        "system_id": "system.system_id",
+        "enable_streaming": false,
+        "counter_type": "tx_discard_pps"
+      }
+    },
+    {
+      "inputs": {},
+      "type": "if_counter",
+      "name": "Ingress packet discard rate",
+      "outputs": {
+        "out": "ingress_pkt_discard_rate"
+      },
+      "properties": {
+        "description": "interface.description",
+        "graph_query": "match(node('system', name='system', system_id=not_none(), deploy_mode='deploy', role=is_in(['leaf', 'spine'])).out('hosted_interfaces').node('interface', if_type=is_in(['ip','ethernet']), name='interface'))",
+        "interface": "interface.if_name",
+        "system_id": "system.system_id",
+        "enable_streaming": false,
+        "counter_type": "rx_discard_pps"
+      }
+    },
+    {
+      "inputs": {
+        "in": "egress_pkt_discard_rate"
+      },
+      "type": "range_check",
+      "name": "Check non-zero egress packet discard rate",
+      "outputs": {
+        "out": "egress_has_pkt_discards"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "min": 1
+        },
+        "raise_anomaly": false,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "ingress_pkt_discard_rate"
+      },
+      "type": "range_check",
+      "name": "Check non-zero ingress packet discard rate",
+      "outputs": {
+        "out": "ingress_has_pkt_discards"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "min": 1
+        },
+        "raise_anomaly": false,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "egress_has_pkt_discards"
+      },
+      "type": "time_in_state_check",
+      "name": "Check if egress packet discard rates overtime",
+      "outputs": {
+        "out": "egress_has_sustained_pkt_discards"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "time_window": 120,
+        "state_range": {
+          "\"false\"": [
+            {
+              "min": 21
+            }
+          ]
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "ingress_has_pkt_discards"
+      },
+      "type": "time_in_state_check",
+      "name": "Check if ingress packet discard rates overtime",
+      "outputs": {
+        "out": "ingress_has_sustained_pkt_discards"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "time_window": 120,
+        "state_range": {
+          "\"false\"": [
+            {
+              "min": 21
+            }
+          ]
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "egress_has_sustained_pkt_discards"
+      },
+      "type": "accumulate",
+      "name": "Anomaly history of egress packet discards",
+      "outputs": {
+        "out": "egress_pkt_discard_anomaly_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    },
+    {
+      "inputs": {
+        "in": "ingress_has_sustained_pkt_discards"
+      },
+      "type": "accumulate",
+      "name": "Anomaly history of sustained ingress packet discards",
+      "outputs": {
+        "out": "ingress_pkt_discard_anomaly_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "label": "Flag STP changes in last 10 days",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "STP interface state",
+      "outputs": {
+        "out": "stp_state"
+      },
+      "properties": {
+        "data_type": "dss",
+        "graph_query": "match(node('system', role='leaf', deploy_mode='deploy', name='leaf').out('hosted_interfaces').node('interface', name='interface').out('link').node('link', role='leaf_l2_server').in_('link').node('interface').out('hosted_vn_endpoints').node('vn_endpoint').out('member_of').node('virtual_network', name='vn').out('instantiated_by').node('vn_instance', name='vn_instance').in_('hosted_vn_instances').node(name='leaf')).distinct(['leaf','interface','vn'])",
+        "service_interval": "120",
+        "service_name": "stp",
+        "vlan": "vn_instance.vlan_id",
+        "interface_description": "interface.description",
+        "execution_count": "-1",
+        "system_id": "leaf.system_id",
+        "service_input": "\"\"",
+        "key": "'%s|%s|stp_state' % (interface.if_name, vn_instance.vlan_id)",
+        "enable_streaming": false,
+        "value_map": {
+          "0": "missing",
+          "1": "forwarding",
+          "2": "blocking",
+          "3": "listening",
+          "4": "learning"
+        }
+      }
+    },
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "STP state change",
+      "outputs": {
+        "out": "stp_state_last_change"
+      },
+      "properties": {
+        "description": "interface.description",
+        "data_type": "ns",
+        "service_interval": "120",
+        "service_name": "stp",
+        "vlan": "vn_instance.vlan_id",
+        "graph_query": "match(node('system', role='leaf', deploy_mode='deploy', name='leaf').out('hosted_interfaces').node('interface', name='interface').out('link').node('link', role='leaf_l2_server').in_('link').node('interface').out('hosted_vn_endpoints').node('vn_endpoint').out('member_of').node('virtual_network', name='vn').out('instantiated_by').node('vn_instance', name='vn_instance').in_('hosted_vn_instances').node(name='leaf')).distinct(['leaf','interface','vn'])",
+        "execution_count": "-1",
+        "system_id": "leaf.system_id",
+        "service_input": "\"\"",
+        "key": "'%s|%s|last_change' % (interface.if_name, vn_instance.vlan_id)",
+        "enable_streaming": false
+      }
+    },
+    {
+      "inputs": {
+        "in": "stp_state_last_change"
+      },
+      "type": "range_check",
+      "name": "STP state change within last 10 days",
+      "outputs": {
+        "out": "stp_state_changed_in_last_10_days"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "max": 863999
+        },
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "stp_state_changed_in_last_10_days"
+      },
+      "type": "accumulate",
+      "name": "Anomaly history of STP state change",
+      "outputs": {
+        "out": "stp_state_change_anomaly_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 50,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ],
+  "stages": [
+    {
+      "name": "stp_state_last_change",
+      "units": "seconds"
+    }
+  ]
+}

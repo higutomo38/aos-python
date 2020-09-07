@@ -1,0 +1,17 @@
+{
+    "properties": {
+        "identity": {
+            "pattern": "^[^\\|]+\\|[1-9][0-9]*\\|(last_change|num_changes|stp_state)$", 
+            "type": "string"
+        }, 
+        "value": {
+            "pattern": "^[1-9][0-9]*$", 
+            "type": "string"
+        }
+    }, 
+    "required": [
+        "identity", 
+        "value"
+    ], 
+    "type": "object"
+}

@@ -1,0 +1,85 @@
+{
+  "label": "OSPF Sessions",
+  "description": "Obtain telemetry status for the OSPF sessions",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "extensible_data_collector",
+      "name": "OSPF session status",
+      "outputs": {
+        "out": "OSPF session status"
+      },
+      "properties": {
+        "data_type": "ts",
+        "graph_query": [
+          "match(\n  node('system', name='system', role='leaf', deploy_mode=is_in(['deploy', 'drain']))\n   .out('hosted_interfaces')\n   .node('interface')\n   .out('composed_of')\n   .node('interface', name='interface', ipv4_addr=not_none())\n   .out('protocol')\n   .node('protocol', routing='ospf', name='protocol'),\n\n  node('interface', name='interface')\n   .out('link')\n   .node('link', link_type='logical_link')\n   .in_('link')\n   .node('interface', name='remote_interface'),\n\n  node('interface', name='interface')\n   .in_('member_interfaces')\n   .node('sz_instance')\n   .in_('instantiated_by')\n   .node('security_zone', name='security_zone'),\n\n  node('protocol', name='protocol').in_('ospf_domain')\n   .node('domain', domain_type='area', domain_id=not_none(), name='ospf_domain'),\n\n  optional(node(type='dummy', name='vn_instance')),\n\n  optional(node('protocol', name='protocol').out('ospf_policy')\n   .node('ospf_policy', name='ospf_policy')),\n).ensure_different('interface', 'remote_interface')",
+          "match(\n  node('virtual_network', name='virtual_network').in_('member_of')\n  .node('vn_endpoint', name='vn_endpoint').in_('member_vn_endpoints')\n  .node('ip_endpoint', name='remote_interface'),\n\n  node('virtual_network', name='virtual_network').out('instantiated_by')\n  .node('vn_instance', name='vn_instance').out('member_interfaces')\n  .node('interface', if_type='svi', name='interface').out('protocol')\n  .node('protocol', name='protocol', routing='ospf').in_('protocol')\n  .node('ip_endpoint', name='remote_interface'),\n\n  node('vn_instance', name='vn_instance').in_('hosted_vn_instances')\n  .node('system', name='system', role='leaf', deploy_mode='deploy'),\n\n  node('vn_endpoint', name='vn_endpoint').in_('hosted_vn_endpoints')\n  .node('interface', if_type=is_in(['ethernet', 'port_channel']))\n  .in_('hosted_interfaces', name='remote_system'),\n\n  node('virtual_network', name='virtual_network').in_('member_vns')\n  .node('security_zone', name='security_zone'),\n\n  node('protocol', name='protocol').in_('ospf_domain')\n  .node('domain', domain_type='area', domain_id=not_none(), name='ospf_domain'),\n\n  optional( node('protocol', name='protocol').out('ospf_policy')\n  .node('ospf_policy', name='ospf_policy') )\n).select('system', 'remote_system', 'interface', 'remote_interface', 'ospf_domain',\n'ospf_policy', 'security_zone', 'vn_instance')"
+        ],
+        "area": "ospf_domain.domain_id",
+        "keys": [
+          "vrf",
+          "neighbor_addr",
+          "area",
+          "interface"
+        ],
+        "service_name": "ospf_state",
+        "service_interval": "120",
+        "service_input": "\"\"",
+        "execution_count": "-1",
+        "system_id": "system.system_id",
+        "vrf": "security_zone.vrf_name",
+        "enable_streaming": false,
+        "ingestion_filter": {},
+        "interface": "interface.if_name or'Vlan%s' % (vn_instance.vlan_id)",
+        "neighbor_addr": "remote_interface.ipv4_addr.split('/')[0]"
+      }
+    },
+    {
+      "inputs": {
+        "in": "OSPF session status"
+      },
+      "type": "match_string",
+      "name": "OSPF expected sessions",
+      "outputs": {
+        "out": "OSPF expected sessions"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "regexp": "'^FULL'",
+        "raise_anomaly": false,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "OSPF expected sessions"
+      },
+      "type": "state_check",
+      "name": "Check active OSPF sessions",
+      "outputs": {
+        "out": "Check active OSPF sessions"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "state": "'false'",
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "Check active OSPF sessions"
+      },
+      "type": "match_count",
+      "name": "OSPF missing sessions",
+      "outputs": {
+        "out": "OSPF missing sessions"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "group_by": [],
+        "reference_state": "true"
+      }
+    }
+  ]
+}

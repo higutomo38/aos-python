@@ -1,0 +1,76 @@
+{
+  "label": "QSFP channel1 1 anomalies",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "Ingest 1",
+      "outputs": {
+        "out": "1_int"
+      },
+      "properties": {
+        "graph_query": "match(node('system', name='switch', system_id=not_none(), deploy_mode='deploy', role=is_in(['leaf', 'spine', 'superspine'])).out('hosted_interfaces').node('interface', if_type=is_in(['ip','ethernet']), name='interface', if_name=not_none()))",
+        "data_type": "ns",
+        "service_interval": "120",
+        "service_name": "sfp",
+        "execution_count": "-1",
+        "system_id": "switch.system_id",
+        "service_input": "\"\"",
+        "key": "'%s|channel%s|%s_int' % (interface.if_name, '1', '1')",
+        "enable_streaming": false
+      }
+    },
+    {
+      "inputs": {
+        "in": "1_int"
+      },
+      "type": "range_check",
+      "name": "Threshold check",
+      "outputs": {
+        "out": "Within threshold"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "property": "value",
+        "range": {
+          "max": 1,
+          "min": 1
+        },
+        "raise_anomaly": false,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "Within threshold"
+      },
+      "type": "state_check",
+      "name": "Threshold anomaly",
+      "outputs": {
+        "out": "Threshold anomaly"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "state": "'false'",
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "Threshold anomaly"
+      },
+      "type": "accumulate",
+      "name": "Anomaly history",
+      "outputs": {
+        "out": "Threshold anomaly history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 1024,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ]
+}

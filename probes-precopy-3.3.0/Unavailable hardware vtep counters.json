@@ -1,0 +1,60 @@
+{
+  "label": "Unavailable hardware vtep counters",
+  "processors": [
+    {
+      "inputs": {},
+      "type": "generic_data_collector",
+      "name": "Collect hardware vtep counter feature state",
+      "outputs": {
+        "out": "feature_enabled"
+      },
+      "properties": {
+        "graph_query": "node('system', name='leaf', role='leaf', deploy_mode='deploy').out('hosted_interfaces').node('interface', if_type='logical_vtep', ipv4_addr=not_none())",
+        "data_type": "dss",
+        "service_interval": "120",
+        "service_name": "vtep_counters",
+        "execution_count": "-1",
+        "system_id": "leaf.system_id",
+        "service_input": "\"\"",
+        "key": "'counters_enabled'",
+        "enable_streaming": false,
+        "value_map": {
+          "0": "disabled",
+          "1": "enabled"
+        }
+      }
+    },
+    {
+      "inputs": {
+        "in": "feature_enabled"
+      },
+      "type": "state_check",
+      "name": "Hardware VTEP counters enabled",
+      "outputs": {
+        "out": "vtep_counters_disabled"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "state": "'disabled'",
+        "raise_anomaly": true,
+        "graph_query": []
+      }
+    },
+    {
+      "inputs": {
+        "in": "feature_enabled"
+      },
+      "type": "accumulate",
+      "name": "VTEP counter feature state history",
+      "outputs": {
+        "out": "feature_enabled_history"
+      },
+      "properties": {
+        "enable_streaming": false,
+        "max_samples": 20,
+        "graph_query": [],
+        "total_duration": 0
+      }
+    }
+  ]
+}

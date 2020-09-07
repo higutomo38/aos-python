@@ -1,0 +1,20 @@
+{
+    "properties": {
+        "identity": {
+            "type": "string",
+            "description": "Identity is VRF name and peer id separated by an underscore"
+        }, 
+        "value": {
+            "enum": [
+                "1", 
+                "2"
+            ], 
+            "type": "string"
+        }
+    }, 
+    "required": [
+        "identity", 
+        "value"
+    ], 
+    "type": "object"
+}
