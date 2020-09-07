@@ -97,37 +97,26 @@ class PostIbaProbes(object):
                    "description": "",
                    "application_schema": ""}
         iba_storage_schema_path = {
-            'iba_integer_data': ['table_usage', 'sfp', 'power_supply',
-                                 'dot1x_hosts', 'evpn_vxlan_type5',
-                                 'resource_util', 'evpn_vxlan_type3',
-                                 'anycast_rp', 'vxlan_inf',
-                                 'mlag_domai', 'bgp_route', 'disk_util',
-                                 'sdwan_policy_rule'],
-            'generic': ['device_info', 'vtep_counters', 'traceroute',
-                        'acl_stats', 'interface_iba',
-                        'mlag_domain', 'vlan', 'pim_rp', 'bgp_iba',
-                        'vxlan_address_table',
-                        'multicast_info', 'route_count', 'ping', 'bgp_vrf',
-                        'multicast_groups',
-                        'vrf', 'evpn_type5', 'vxlan_info', 'interface_buffer',
-                        'lldp_details',
-                        'evpn_type3', 'process_restart_time',
-                        'interface_details', 'resource_usage',
-                        'pim_neighbor_count', 'stp', 'site_device_group',
-                        'site_device'],
-            'interface_counters': ['interface_counters'],
-            'arp': ['arp'],
-            'hostname': ['hostname'],
-            'iba_string_data': ['dot1x', 'ospf_state'],
-            'mlag': ['mlag'],
-            'bgp': ['bgp'],
-            'route': ['route'],
-            'xcvr': ['xcvr'],
-            'graph': ['virtual_infra'],
-            'interface': ['interface'],
-            'lldp': ['lldp'],
-            'mac': ['mac'],
-            'lag': ['lag']
+            'generic': ['table_usage', 'device_info', 'sfp', 'multiagent_detector',
+                     'vtep_counters', 'power_supply', 'traceroute', 'acl_stats',
+                     'interface_iba', 'mlag_domain', 'vlan', 'pim_rp',
+                     'bgp_iba', 'vxlan_address_table', 'anycast_rp',
+                     'multicast_info', 'route_count', 'ping', 'bgp_vrf',
+                     'multicast_groups', 'vrf', 'evpn_type5', 'vxlan_info',
+                     'interface_buffer', 'lldp_details', 'evpn_type3',
+                     'process_restart_time', 'interface_details',
+                     'resource_usage', 'pim_neighbor_count', 'stp'],
+            'interface_counters': ['interface_counters'], 'arp': ['arp'],
+            'iba_integer_data': ['dot1x_hosts', 'evpn_vxlan_type5',
+                              'vxlan_floodlist', 'resource_util',
+                              'evpn_vxlan_type3', 'bgp_route', 'disk_util',
+                              'sdwan_policy_rule'], 'hostname': ['hostname'],
+            'iba_string_data': ['dot1x', 'ospf_state', 'site_device',
+                             'site_device_group', 'site', 'evpn_vxlan_type4',
+                             'evpn_vxlan_type1'], 'mlag': ['mlag'],
+            'bgp': ['bgp'], 'route': ['route'], 'xcvr': ['xcvr'],
+            'graph': ['virtual_infra'], 'interface': ['interface'],
+            'lldp': ['lldp'], 'mac': ['mac'], 'lag': ['lag']
         }
         print ('##### Install Service Registry from json_schemas.postXXX #####')
         json_schemas = glob.glob('./dist/json_schemas.post*.tar.gz')[0]
@@ -139,18 +128,18 @@ class PostIbaProbes(object):
             for schema_path in iba_storage_schema_path.items():
                 if json_file.replace('.json', '') in schema_path[1]:
                     payload['storage_schema_path'] = 'aos.sdk.telemetry.schemas.' + schema_path[0]
-                    break
-                resp = requests.post('https://' + address + '/api/telemetry-service-registry',
-                                     headers={'AUTHTOKEN': token,
-                                              'Content-Type': 'application/json'},
-                                     data=json.dumps(payload), verify=False)
-            if resp.status_code == 422:
-                print ('----- Error: No storage schema path ' + json_file.replace('.json', '')
-                       + '. Update iba_storage_schema_path')
-            elif resp.status_code == 409:
-                print ('----- ' + json_file.replace('.json', '') + ' is already installed.')
-            else:
-                print ('----- Install Service Registry ' + json_file)
+                    # break
+                    resp = requests.post('https://' + address + '/api/telemetry-service-registry',
+                                         headers={'AUTHTOKEN': token,
+                                                  'Content-Type': 'application/json'},
+                                         data=json.dumps(payload), verify=False)
+                    if resp.status_code == 422:
+                        print ('----- Error: No storage schema path ' + json_file.replace('.json', '')
+                               + '. Update iba_storage_schema_path')
+                    elif resp.status_code == 409:
+                        print ('----- ' + json_file.replace('.json', '') + ' is already installed.')
+                    else:
+                        print ('----- Install Service Registry ' + json_file)
         print ('##### Done #####')
         time.sleep(1)
 

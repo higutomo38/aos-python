@@ -24,7 +24,7 @@ class PostConfigletsIntDown(object):
         Check if there is interface flapping anomary on local '/var/log/syslog'.
         :return: [system_id, interface_number]
         """
-        with open('hogehoge.json', 'r') as f:
+        with open('/var/log/syslog', 'r') as f:
             syslogs = f.readlines()
         sys_int_list = []
         for syslog in syslogs:

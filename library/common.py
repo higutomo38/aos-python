@@ -97,35 +97,52 @@ class AosApi(object):
                                  headers = {'AUTHTOKEN': token, 'Content-Type': 'application/json'},
                                  data = json.dumps(payload), verify = False).json()
 
+    def bp_cabling_map_get(self, token, bp_id, address):
+        return self.request_get_format(token, bp_id, address,
+               '/api/blueprints/{blueprint_id}/cabling-map')
+
     def bp_configlets_get(self, token, bp_id, address):
         return self.request_get_format(token, bp_id, address,
                '/api/blueprints/{blueprint_id}/configlets')
 
     def bp_diff_get(self, token, bp_id, address):
-        return self.request_get_format(token, bp_id, address,
-               '/api/blueprints/{blueprint_id}/diff')
+        return self.request_get_format(token, bp_id, address, '/api/blueprints/{blueprint_id}/diff')
 
     def bp_node_get_system(self, token, bp_id, address):
-        return self.request_get_format(token, bp_id, address,
-               '/api/blueprints/{blueprint_id}/nodes?node_type=system')
+        return self.request_get_format(token, bp_id, address, '/api/blueprints/{blueprint_id}/nodes?node_type=system')
+
+    def bp_qe_post_system_interface(self, token, bp_id, address):
+        return self.request_post_format\
+                    (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
+                     {"query": "node('system', name='system').out().node('interface', name='interface')"})
+
+    def bp_qe_post_system_role_leaf_out_rack(self, token, bp_id, address):
+        return self.request_post_format\
+                    (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
+                     {"query": "node('system', name='system', role='leaf').out().node('rack', name='rack')"})
+
+    def bp_qe_post_system_role_spine(self, token, bp_id, address):
+        return self.request_post_format\
+                    (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
+                     {"query": "node('system', name='system', role='spine')"})
 
     def bp_qe_post_system_role_spineleaf(self, token, bp_id, address):
         return self.request_post_format\
                     (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
-                     {"query": "node('system', name='system', \
-                                     role=is_in(['leaf', 'spine']))"})
+                     {"query": "node('system', name='system', role=is_in(['leaf', 'spine']))"})
 
     def bp_qe_post_system_role_spineleafl2l3server(self, token, bp_id, address):
         return self.request_post_format\
                     (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
-                     {"query": "node('system', name='system', \
-                                     role=is_in(['leaf', 'spine', 'l2_server', 'l3_server']))"})
+                     {"query": "node('system', name='system', role=is_in(['leaf', 'spine', 'l2_server', 'l3_server']))"})
 
     def bp_qe_post_system_systemtype_server(self, token, bp_id, address):
         return self.request_post_format\
                     (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
-                     {"query": "node('system', name='system', "
-                               "system_type='server')"})
+                     {"query": "node('system', name='system', system_type='server')"})
+
+    def bp_racks_get(self, token, bp_id, address):
+        return self.request_get_format(token, bp_id, address, '/api/blueprints/{blueprint_id}/racks')
 
     def packages_get(self, token, bp_id, address):
         return self.request_get_format(token, bp_id, address, '/api/packages')
@@ -134,8 +151,10 @@ class AosApi(object):
         return self.request_get_format(token, bp_id, address, '/api/system-agents')
 
     def system_agents_id_get(self, token, bp_id, address, agent_id):
-        return self.request_get_format(token, bp_id, address,
-               '/api/system-agents/{agent_id}'.format(agent_id = agent_id))
+        return self.request_get_format(token, bp_id, address, '/api/system-agents/' + agent_id)
+
+    def telemetry_service_registry_get(self, token, bp_id, address):
+        return self.request_get_format(token, bp_id, address, '/api/telemetry-service-registry')
 
 # def bp_node_system_get(self):
 #     return self.request_get_format('https://' + self.token_bp_id_address[2] \
