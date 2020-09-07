@@ -2,7 +2,7 @@
 
 These modules are AOS API Python scripts for demonstration.
 
-AOS 3.2.1
+AOS 3.3.0
 
 ## **Installation**
 
