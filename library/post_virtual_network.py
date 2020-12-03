@@ -1,0 +1,153 @@
+from shared import LoginBlueprint
+from shared import AosApi
+import inquirer
+import json
+import requests
+
+token_bp_id_address = LoginBlueprint().blueprint()
+token = token_bp_id_address[0]
+bp_id = token_bp_id_address[1]
+address = token_bp_id_address[2]
+
+
+class InputParam(object):
+
+    def __init__(self):
+        self.vn_label = input('Virtual Network Name: ')
+        self.vlan_id = int(input('VLAN_ID: '))
+        self.vn_id = input('VNI: ')
+        self.security_zone = input('Security Zone: ')
+        self.ipv4_subnet = input('IPv4 Subnet: ')
+        self.virtual_gateway_ipv4 = input('Virtual_Gateway_IPv4: ')
+
+    def dhcp(self):
+        confirm = { inquirer.Confirm('confirmed', message = 'DHCP Service ?', default=True)}
+        confirmation = inquirer.prompt(confirm)
+        if confirmation['confirmed'] == True: self.dhcp_service = "dhcpServiceEnabled"
+        else: self.dhcp_service = "dhcpServiceDisabled"
+        return self.dhcp_service
+
+    def server(self):
+        self.server_list = []
+        while True:
+            server_host = input('Enter Server Hostname or "No": ')
+            if server_host in ['No','NO','no']: break
+            elif server_host == '': continue
+            self.server_list.append(server_host)
+        print ('--- Target Server List: ' + str(self.server_list))
+        return self.server_list
+
+
+class PostVirtualNetwork(InputParam):
+
+    def physical_leaf_list(self):
+        """
+        :return: Leaf_ID list connected to 'server_list'. Use physical interface
+        "if_type='ethernet'" not 'port_channel' in graph query at this time.
+        Delete duplicate Leaf_ID in the list by 'list(set)'.
+        """
+        return list(set([ AosApi().bp_qe_post(token, bp_id, address,
+                    "node('system', name='server', role='l2_server', hostname='" + server_host + "')\
+                    .out('hosted_interfaces')\
+                    .node('interface', name='server_int', if_type='ethernet')\
+                    .out('link')\
+                    .node('link', name='link')\
+                    .in_('link')\
+                    .node('interface', name='leaf_int')\
+                    .in_('hosted_interfaces')\
+                    .node('system', name='leaf')\
+                    .ensure_different('server_int', 'leaf_int')"\
+                    )['items'][0]['leaf']['id'] for server_host in PostVirtualNetwork.server(self) ]))
+
+    def logical_physical_leaf_list(self):
+        """
+        :input: physical_leaf_list(self).
+        :return: Leaf_ID list logical(mlag) and physical(not include member of mlag).
+                 1. Create Dict { 'member of mlag system_id' : 'logical(mlag) system_id' }
+                 2. if 'member of mlag' is in physical_leaf_list,
+                    then remove the id and append logical system_id instead.
+                 3. Delete duplicate logical system_id in the list by 'list(set)'.
+        :note: AOS push VN config except for VN endpoint to these system on other method.
+        """
+        leaf_list = PostVirtualNetwork.physical_leaf_list(self)
+        sys_rg_dict = { rg_sys['system']['id']:rg_sys['rg']['id'] \
+                        for rg_sys in AosApi().bp_qe_post(token, bp_id, address,
+                        "node('redundancy_group', name='rg', rg_type='mlag')"\
+                        ".out('composed_of_systems')"\
+                        ".node('system', name='system', role='leaf')"\
+                        )['items']}
+        for system_id in sys_rg_dict.items():
+            if system_id[0] in leaf_list:
+                leaf_list.remove(system_id[0])
+                leaf_list.append(system_id[1])
+        return list(set(leaf_list))
+
+    def security_zone_id(self):
+        """
+        :input: security_zone
+        :return: security_zone_id
+        """
+        for sec_zone in AosApi().bp_security_zone_get(token, bp_id, address)['items'].values():
+            if sec_zone['label'] == self.security_zone:
+                return sec_zone['id']
+
+    def endpoints(self):
+        """
+        :return: Server Interface ID list logical(port-channel) and physical(ethernet) facing leafs.
+        If a physical one is member of logical, only port-channel ID returned.
+        """
+        interface_id = []
+        for server_host in self.server_list:
+            int_sys_dict = { int_sys['interface']['if_type']:int_sys['interface']['id']\
+                             for int_sys in AosApi().bp_qe_post(token, bp_id, address,
+                             "node('system', name='server', role='l2_server', hostname='" + server_host + "')\
+                             .out('hosted_interfaces')\
+                             .node('interface', name='interface')" \
+                             )['items']}
+            if len(int_sys_dict) == 2:
+                interface_id.append(int_sys_dict['port_channel'])
+            elif len(int_sys_dict) == 1:
+                interface_id.append(int_sys_dict['ethernet'])
+        return interface_id
+
+    def post_virtual_network(self):
+        """
+        :input: For creating 'vn_template'.
+                    -> security_zone_id(self), vn_label, vn_type, vn_id,
+                       ipv4_subnet, virtual_gateway_ipv4, dhcp_service.
+                For building 'vn_template'.
+                    -> logical_physical_leaf_list(self), vlan_id.
+        :return: Post Virtual Network 'vn_template' using 'vn_template'
+        """
+        vn_template = {
+            "label": self.vn_label,
+            "vn_type": "vxlan",
+            "vn_id": self.vn_id,
+            "security_zone_id": PostVirtualNetwork.security_zone_id(self),
+            "l3_connectivity": "l3Enabled",
+            "ipv4_subnet": self.ipv4_subnet,
+            "virtual_gateway_ipv4": self.virtual_gateway_ipv4,
+            "dhcp_service": PostVirtualNetwork.dhcp(self),
+        }
+        target_dict = {}
+        target_list = []
+        for leaf_id in PostVirtualNetwork.logical_physical_leaf_list(self):
+            target_dict["system_id"] = leaf_id
+            target_dict["vlan_id"] = self.vlan_id
+            target_list.append(target_dict)
+            target_dict = {}
+        vn_template["bound_to"] = target_list
+        target_list = []
+        for interface_id in PostVirtualNetwork.endpoints(self):
+            target_dict["interface_id"] = interface_id
+            target_dict["tag_type"] = "vlan_tagged"
+            target_list.append(target_dict)
+            target_dict = {}
+        vn_template["endpoints"] = target_list
+        resp = requests.post('https://' + address + '/api/blueprints/' + bp_id + '/virtual-networks',
+                             headers={'AUTHTOKEN':token, 'Content-Type':'application/json'},
+                             data=json.dumps(vn_template), verify=False)
+        if resp.status_code != 201: print (resp.text)
+
+if __name__ == '__main__':
+    PostVirtualNetwork().post_virtual_network()

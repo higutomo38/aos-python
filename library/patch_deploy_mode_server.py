@@ -4,9 +4,9 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import sys
 
-import common
-from common import LoginBlueprint
-from common import AosApi
+import shared
+from shared import LoginBlueprint
+from shared import AosApi
 
 token_bp_id_address = LoginBlueprint().blueprint()
 token = token_bp_id_address[0]
@@ -24,7 +24,7 @@ class PatchDeployMode(object):
         Change server deploy mode.
         """
         input_mode = input('deploy_mode:')
-        if input_mode in common.deploy_mode:
+        if input_mode in shared.deploy_mode:
             payload = {'nodes': {}}
             for system in AosApi().bp_qe_post_system_systemtype_server(token, bp_id, address)['items']:
                 payload['nodes'][system['system']['id']] = {'deploy_mode': input_mode}

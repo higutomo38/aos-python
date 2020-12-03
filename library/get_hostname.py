@@ -1,7 +1,7 @@
 import csv
 
-from common import LoginBlueprint
-from common import AosApi
+from shared import LoginBlueprint
+from shared import AosApi
 
 token_bp_id_address = LoginBlueprint().blueprint()
 token = token_bp_id_address[0]
