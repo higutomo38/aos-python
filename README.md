@@ -9,7 +9,7 @@ AOS 3.3.0
 Clone repo into your aos project.
 
 ```
-git clone https://github.com/higutomo38/aos.git
+git clone https://github.com/higutomo38/aos-python.git
 ```
 
 Install Python 3.X on your local. Need some python modules in addition to default.
