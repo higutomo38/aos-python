@@ -43,7 +43,7 @@ e.g. python get_hostname.py 192.168.1.1 'blue print'
 | Closed-Loop | configlets_intdown_flap.py | Push interface down configlets triggered by IBA interface flap anomaly | Cumulus |
 
 
-All modules should be same directory as 'common.py' otherwise you can't login to AOS.
+All modules should be same directory as 'shared.py' otherwise you can't login to AOS.
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
@@ -99,7 +99,7 @@ This python script execute batch of above using API.
 Download latest AOS SDK e.g.'aos-dev-sdk-XXX.zip' from here.<br>
 https://portal.apstra.com/downloads/ <br>
 
-Copy the zip into directory same as 'common.py', 'post_iba_probe.py' and 'Probes'. <br>
+Copy the zip into directory same as 'shared.py', 'post_iba_probe.py' and 'Probes'. <br>
 Run 'post_iba_probe.py' putting the zip file name behind blueprint.<br>
 
 e.g.<br>
@@ -124,7 +124,7 @@ All probes are created with temporary input Ex.'Match expected os version by OS 
 2. Turn on syslog service.<br>
 3. Copy files below.<br>
 
-   - common.py
+   - shared.py
    - configlets_intdown_flap.py<br>
  
 if your test env is on Apstra Cloudlab<br>
