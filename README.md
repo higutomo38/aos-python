@@ -12,7 +12,7 @@ Run the docker repo.
 docker run --name aos-python -it -w /tmp/aos-python/library higutomo38/aos-python:latest /bin/bash
 ```
 
-Get latest AOS SDK from Apstra client portal and copy it to the container path "/tmp/aos-python/library"
+Get latest AOS SDK from Apstra client portal and copy it to the container path "/tmp/aos-python/library"<br>
 (Note: Skip this step if you don't use 'post_iba_probe.py')
 
 ```
