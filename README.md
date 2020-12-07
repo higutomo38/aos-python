@@ -19,16 +19,16 @@ Get latest AOS SDK from Apstra client portal and copy it to the container path "
 docker cp ./aos-dev-sdk-462.zip aos-python:/tmp/aos-python/library
 ```
 
-Run python file with AOS server FQDN or IP Address and Blueprint name.<br>
-
-e.g.<br>
+Run python file using AOS server FQDN / IP address, blueprint name and AOS SDK.<br>
 ```
 python get_hostname.py 192.168.1.1 blueprint
-AOS Login
-ID:admin
-Password:
 ```
-Use single quotation for Blueprint name if blank is in it.<br>
+Add aos-dev-sdk for 'post_iba_probe.py'
+```
+python post_iba_probe.py 192.168.1.1 blueprint aos-dev-sdk-462.zip
+```
+
+Use single quotation if blueprint name includes blank.<br>
 e.g. python get_hostname.py 192.168.1.1 'blue print'
 
 ## **Module list**
@@ -36,16 +36,14 @@ e.g. python get_hostname.py 192.168.1.1 'blue print'
 | Category | Module | Description | NOS |
 | --- | --- | --- | --- |
 | Blueprint | get_hostname.py | Create new CSV file lists hostnames | All |
+|  | get_nos_config.py | Save NOS configuration on local | Cumulus, EOS |
 |  | patch_hostname.py | Change hostnames listed in CSV | All |
 |  | patch_label.py | Change labels listed in CSV | All |
 |  | patch_deploy_mode_server.py | Change deploy mode | Server |
-|  | get_nos_config.py | Save NOS configuration on local | Cumulus, EOS |
-|  | get_ip_sheet.py | Save AOS database sheet tie to device IP | Cumulus, EOS |
+|  | post_vn_based_server_name.py | Post virtual network based on server hostname. Switch ports go selecting automatically. | All |
 | IBA | post_iba_probe.py | Create all probes without AOS-CLI | All |
-| Closed-Loop | configlets_intdown_flap.py | Push interface down configlets triggered by IBA interface flap anomaly | Cumulus |
 
 
-All modules should be same directory as 'shared.py' otherwise you can't login to AOS.
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
