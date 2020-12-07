@@ -1,20 +1,21 @@
 # **AOS Python Module**
 
-These modules are AOS API Python scripts for demonstration.
+AOS python modules for demonstration here are packaged as dockerhub repository "higutomo38/aos-python". Dockerhub builds the image automatically after github repo here goes updated.
 
 AOS 3.3.0
 
 ## **Installation**
 
-Clone repo into your aos project.
+Run the docker repo.
 
 ```
-git clone https://github.com/higutomo38/aos-python.git
+docker run --name aos-python -it -w /tmp/aos-python/library higutomo38/aos-python:latest /bin/bash
 ```
 
-Install Python 3.X on your local. Need some python modules in addition to default.
+Get latest AOS SDK from Apstra client portal and copy it to the container path "/tmp/aos-python/library"
+
 ```
-pip install requests urllib3 openpyxl netaddr
+docker cp ./aos-dev-sdk-462.zip aos-python:/tmp/aos-python/library
 ```
 
 Run python file with AOS server FQDN or IP Address and Blueprint name.<br>
