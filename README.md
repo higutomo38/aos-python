@@ -63,19 +63,46 @@ Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br>
 
 ### **Change label (Spine, Leaf and Server)**
 The procedure is same as hostname. Add new labels in culumn 'new_hostname or label' and save the CSV.<br> 
-Run 'patch_label.py'<br> 
+
+```
+$ python patch_label.py
+```
 
 ### **Change deploy mode (Server)**
 You can monitor Leaf interfaces up/down facing server without aos agent when turn deploy mode of servers on.<br> 
-Run 'patch_deploy_mode_server.py'<br> 
+
+```
+$ python patch_deploy_mode_server.py
+```
 
 ### **Save NOS configs on local (Spine and Leaf)**
 All rendered NOS configs got saved on local. The script create 'nos_config' directory automatically and put .conf into it.<br> 
-Run 'get_nos_config.py'<br>
+
+```
+$ python get_nos_config.py
+```
 
 ### **Post virtual network based on server hostname**
 Switch ports go selecting automatically based server hostname when add virtual network.
-Run 'post_vn_based_server_name.py'<br>
+
+```
+$ python post_vn_based_server_name.py
+AOS Login
+ID:
+Password:
+Virtual Network Name: vn131
+VLAN_ID: 131
+VNI: 10131
+Security Zone: finance
+IPv4 Subnet: 10.1.1.0/24
+Virtual_Gateway_IPv4: 10.1.1.1
+[?] DHCP Service ? (Y/n): y
+Enter Server Hostname or "No": evpn-mlag-001-server001
+Enter Server Hostname or "No": evpn-mlag-001-server002
+Enter Server Hostname or "No": evpn-mlag-001-server003
+Enter Server Hostname or "No": no
+--- Target Server List: ['evpn-mlag-001-server001', 'evpn-mlag-001-server002', 'evpn-mlag-001-server003']
+```
 
 ## **IBA**
 ### **Create all probes without AOS-CLI**
