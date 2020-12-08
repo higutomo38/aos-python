@@ -1,53 +1,59 @@
 # **AOS Python Module**
 
-These modules are AOS API Python scripts for demonstration.
+AOS python modules for demonstration here are packaged as dockerhub repository "higutomo38/aos-python". Dockerhub builds the image automatically after github repo here goes updated.
 
 AOS 3.3.0
 
 ## **Installation**
 
-Clone repo into your aos project.
+Run the docker repo.
 
 ```
-git clone https://github.com/higutomo38/aos-python.git
+docker run --name aos-python -it -w /tmp/aos-python/library higutomo38/aos-python:latest /bin/bash
 ```
 
-Install Python 3.X on your local. Need some python modules in addition to default.
+Get latest AOS SDK from Apstra client portal and copy it to the container path "/tmp/aos-python/library"<br>
+(Note: Skip this step if you don't use 'post_iba_probe.py')
+
 ```
-pip install requests urllib3 openpyxl netaddr
+docker cp ./aos-dev-sdk-462.zip aos-python:/tmp/aos-python/library
 ```
 
-Run python file with AOS server FQDN or IP Address and Blueprint name.<br>
+Run python file using AOS server FQDN / IP address, blueprint name and AOS SDK.<br>
+```
+python get_hostname.py 192.168.1.1 blueprint_name
+```
+Add aos-dev-sdk for 'post_iba_probe.py'
+```
+python post_iba_probe.py 192.168.1.1 blueprint_name aos-dev-sdk-462.zip
+```
 
-e.g.<br>
-```
-python get_hostname.py 192.168.1.1 blueprint
-AOS Login
-ID:admin
-Password:
-```
-Use single quotation for Blueprint name if blank is in it.<br>
+Use single quotation if blueprint name includes blank.<br>
 e.g. python get_hostname.py 192.168.1.1 'blue print'
 
-## **Module list**
+## **Modules**
 
 | Category | Module | Description | NOS |
 | --- | --- | --- | --- |
 | Blueprint | get_hostname.py | Create new CSV file lists hostnames | All |
+|  | get_nos_config.py | Save NOS configuration on local | All |
 |  | patch_hostname.py | Change hostnames listed in CSV | All |
 |  | patch_label.py | Change labels listed in CSV | All |
 |  | patch_deploy_mode_server.py | Change deploy mode | Server |
-|  | get_nos_config.py | Save NOS configuration on local | Cumulus, EOS |
-|  | get_ip_sheet.py | Save AOS database sheet tie to device IP | Cumulus, EOS |
+|  | post_vn_based_server_name.py | Post virtual network based on server hostname. Switch ports go selecting automatically. | All |
 | IBA | post_iba_probe.py | Create all probes without AOS-CLI | All |
-| Closed-Loop | configlets_intdown_flap.py | Push interface down configlets triggered by IBA interface flap anomaly | Cumulus |
 
 
-All modules should be same directory as 'shared.py' otherwise you can't login to AOS.
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
-First of all you need to get current hostname list as CSV. Run 'get_hostname.py' and then you can see 'hostname_label.csv' on same directory you executed the script.
+First of all you get current hostname list as CSV. 
+
+```
+$ python get_hostname.py 
+```
+
+You can see 'hostname_label.csv' on same directory you run the script.
 
 ex.'hostname_label.csv'<br>
 <img src="https://user-images.githubusercontent.com/21299310/75221479-48479700-57e5-11ea-8af9-2b167fc1815d.png" width="640px">
@@ -57,31 +63,55 @@ Add new hostnames in column 'new_hostname or label' and save the CSV.
 ex.'hostname_label.csv'<br>
 <img src="https://user-images.githubusercontent.com/21299310/75225362-cf990880-57ed-11ea-9849-f71f4fea706e.png" width="640px">
 
-Run 'patch_hostname.py'.<br> 
+```
+$ python patch_hostname.py 
+```
+
 Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br> 
 
 
 ### **Change label (Spine, Leaf and Server)**
 The procedure is same as hostname. Add new labels in culumn 'new_hostname or label' and save the CSV.<br> 
-Run 'patch_label.py'<br> 
+
+```
+$ python patch_label.py
+```
 
 ### **Change deploy mode (Server)**
 You can monitor Leaf interfaces up/down facing server without aos agent when turn deploy mode of servers on.<br> 
-Run 'patch_deploy_mode_server.py'<br> 
+
+```
+$ python patch_deploy_mode_server.py
+```
 
 ### **Save NOS configs on local (Spine and Leaf)**
-All rendered NOS configs got saved on local. The script create 'nos_config' directory automatically and put .conf into it.<br> 
-Run 'get_nos_config.py'<br>
+All rendered NOS configs got saved on local. The script create 'nos_config' directory and zip it up.<br> 
 
-### **Save AOS database sheet relating to device IP**
-You get AOS database related network device IP as xlsx file.
+```
+$ python get_nos_config.py
+```
 
-1. Device
-2. Cabling
-3. Underlay 
-4. Overlay 
+### **Post virtual network based on server hostname**
+Switch ports go selecting automatically based server hostname when add virtual network.
 
-Run 'get_ip_sheet.py'<br>
+```
+$ python post_vn_based_server_name.py
+AOS Login
+ID:
+Password:
+Virtual Network Name: vn131
+VLAN_ID: 131
+VNI: 10131
+Security Zone: finance
+IPv4 Subnet: 10.1.1.0/24
+Virtual_Gateway_IPv4: 10.1.1.1
+[?] DHCP Service ? (Y/n): y
+Enter Server Hostname or "No": evpn-mlag-001-server001
+Enter Server Hostname or "No": evpn-mlag-001-server002
+Enter Server Hostname or "No": evpn-mlag-001-server003
+Enter Server Hostname or "No": no
+--- Target Server List: ['evpn-mlag-001-server001', 'evpn-mlag-001-server002', 'evpn-mlag-001-server003']
+```
 
 ## **IBA**
 ### **Create all probes without AOS-CLI**
@@ -111,37 +141,3 @@ Password:
 ```
 
 All probes are created with temporary input Ex.'Match expected os version by OS family.json' use NOS 'cumulus' and version '3.7.12' as default. You can edit them on WebUI Analytics in BP - Probes - Push Edit - Select processor you want to change.<br>
-
-## **Closed-Loop**
-### **Push ifdown configlets triggered by IBA interface flap anomaly**
-
-#### **AOS Setting**
-1. Set IBA Interface Flapping with raising anomaly on 'device interface flappinng' processor.
-2. Create syslog config and turn on 'Forward Anomalies'.
-
-#### **Syslog Server Setting**<br>
-1. Install python and libraries as above.
-2. Turn on syslog service.<br>
-3. Copy files below.<br>
-
-   - shared.py
-   - configlets_intdown_flap.py<br>
- 
-if your test env is on Apstra Cloudlab<br>
-  - ahost='172.16.90.3' in 'common.py'<br>
-  - Disable urllib3 in 'common.py' and 'configlets_intdown_flap.py'<br>
-     ```
-     #from requests.packages.urllib3.exceptions import InsecureRequestWarning
-     #requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-     ```
-
-4. Set crontab to run 'configlets_intdown_flap.py' periodically. The script search the flap anomaly in syslog file and then push interface down configlets to the node/interface are identical with the log.<br>
-   ex. <br>
-   ```
-   cp /etc/crontab /etc/cron.d/test_cron
-   #/etc/cron.d/test_cron
-   #Add new line here.
-   * *     * * *   root    for i in `seq 0 20 59`;do (sleep ${i}; python /home/admin/configlets_intdown_flap.py) & done;
-   service cron restart
-   ```
-5. Check 'Logical Diff' tab in 'uncommited' on AOS and then push 'commit'.
