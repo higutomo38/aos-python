@@ -47,7 +47,13 @@ e.g. python get_hostname.py 192.168.1.1 'blue print'
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
-First of all you need to get current hostname list as CSV. Run 'get_hostname.py' and then you can see 'hostname_label.csv' on same directory you executed the script.
+First of all you get current hostname list as CSV. 
+
+```
+$ python get_hostname.py 
+```
+
+You can see 'hostname_label.csv' on same directory you run the script.
 
 ex.'hostname_label.csv'<br>
 <img src="https://user-images.githubusercontent.com/21299310/75221479-48479700-57e5-11ea-8af9-2b167fc1815d.png" width="640px">
@@ -57,7 +63,10 @@ Add new hostnames in column 'new_hostname or label' and save the CSV.
 ex.'hostname_label.csv'<br>
 <img src="https://user-images.githubusercontent.com/21299310/75225362-cf990880-57ed-11ea-9849-f71f4fea706e.png" width="640px">
 
-Run 'patch_hostname.py'.<br> 
+```
+$ python patch_hostname.py 
+```
+
 Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br> 
 
 
@@ -76,7 +85,7 @@ $ python patch_deploy_mode_server.py
 ```
 
 ### **Save NOS configs on local (Spine and Leaf)**
-All rendered NOS configs got saved on local. The script create 'nos_config' directory automatically and put .conf into it.<br> 
+All rendered NOS configs got saved on local. The script create 'nos_config' directory and zip it up.<br> 
 
 ```
 $ python get_nos_config.py
