@@ -29,7 +29,7 @@ python post_iba_probe.py 192.168.1.1 blueprint_name aos-dev-sdk-462.zip
 ```
 
 Use single quotation if blueprint name includes blank.<br>
-e.g. python get_hostname.py 192.168.1.1 'blue print'
+e.g. python get_hostname.py 192.168.1.1 'blueprint tomoyuki'
 
 ## **Modules**
 
@@ -80,7 +80,7 @@ $ python patch_label.py 192.168.1.1 blueprint_name
 You can monitor Leaf interfaces up/down facing server without aos agent when turn deploy mode of servers on.<br> 
 
 ```
-$ python patch_deploy_mode_server.py
+$ python patch_deploy_mode_server.py 192.168.1.1 blueprint_name
 ```
 
 ### **Save NOS configs on local (Spine and Leaf)**
@@ -139,7 +139,7 @@ Run 'post_iba_probe.py' putting the zip file name behind blueprint.<br>
 
 e.g.<br>
 ```
-python post_iba_probe.py 192.168.1.1 'tomo pod1' aos-dev-sdk-462.zip
+python post_iba_probe.py 192.168.1.1 'tomoyuki pod1' aos-dev-sdk-462.zip
 AOS Login
 ID:admin
 Password:
