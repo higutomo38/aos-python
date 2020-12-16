@@ -41,9 +41,8 @@ e.g. python get_hostname.py 192.168.1.1 'blue print'
 |  | patch_label.py | Change labels listed in CSV | All |
 |  | patch_deploy_mode_server.py | Change deploy mode | Server |
 |  | post_vn_based_server_name.py | Post virtual network based on server hostname. Switch ports go selecting automatically. | All |
-| IBA | post_iba_probe.py | Create all probes without AOS-CLI | All |
-
-
+| Configlets | post_configlets.py | Samples of configlets with Jinja and Property-set | Junos |
+| IBA | post_iba_probe.py | Create all probes without AOS-CLI | Except Junos |
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
@@ -112,6 +111,12 @@ Enter Server Hostname or "No": evpn-mlag-001-server003
 Enter Server Hostname or "No": no
 --- Target Server List: ['evpn-mlag-001-server001', 'evpn-mlag-001-server002', 'evpn-mlag-001-server003']
 ```
+## **Configlets**
+### **Sample Configlets and Property-Set for Junos**
+```
+$ python post_configlets.py
+```
+You should edit both contents 'vrf name', 'prefix', 'ntp server' and so on after running the script.
 
 ## **IBA**
 ### **Create all probes without AOS-CLI**
