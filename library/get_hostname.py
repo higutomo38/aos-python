@@ -22,8 +22,9 @@ class GetHostname(object):
             writer = csv.writer(file)
             writer.writerow(
                 ['ID', 'System_ID', 'Role', 'Hostname', 'New Hostname or Label'])
-            for node in AosApi().bp_qe_post_system_role_spineleafl2l3server\
-                        (token, bp_id, address)['items']:
+            for node in AosApi().bp_qe_post(token, bp_id, address,
+                        "node('system', name='system', \
+                         role=is_in(['leaf', 'spine', 'l2_server', 'l3_server']))")['items']:
                 node = node['system']
                 writer.writerow([node['id'], node['system_id'], node['role'], node['hostname']])
 

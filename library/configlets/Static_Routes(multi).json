@@ -1,0 +1,16 @@
+{% set prefix_nexthop = {
+    '10.0.1.0/24': '10.0.0.1',
+    '10.0.2.0/24': '10.0.0.1',
+    '10.0.3.0/24': '10.0.0.1',
+    } %}
+{% for prefix, nexthop in prefix_nexthop.items() %}
+routing-instances {
+    {{vrf_name}} {
+        routing-options {
+            static {
+                route {{prefix}} next-hop {{nexthop}};
+            }
+        }
+    }
+}
+{% endfor %}

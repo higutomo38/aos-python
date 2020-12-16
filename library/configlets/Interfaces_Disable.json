@@ -1,0 +1,7 @@
+interfaces {
+{% for interface in interfaces.split(',') %}
+{{interface}}{
+    disable;
+    }
+{% endfor %}
+}

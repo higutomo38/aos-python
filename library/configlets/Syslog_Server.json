@@ -1,0 +1,7 @@
+system {
+    syslog {
+        host {{syslog_server}} {
+            {{syslog_facility}} {{syslog_level}} ;
+        }
+    }
+} 

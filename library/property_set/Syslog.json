@@ -1,0 +1,8 @@
+{
+    "label": "Syslog",
+    "values": {
+      "syslog_server": "10.1.2.4",
+      "syslog_facility": "any",
+      "syslog_level": "critical"
+    }
+}

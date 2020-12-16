@@ -115,41 +115,11 @@ class AosApi(object):
         return self.request_post_format \
             (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe', {"query": qe})
 
-    def bp_qe_post_system_interface(self, token, bp_id, address):
-        return self.request_post_format\
-                    (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
-                     {"query": "node('system', name='system').out().node('interface', name='interface')"})
-
-    def bp_qe_post_system_role_leaf_out_rack(self, token, bp_id, address):
-        return self.request_post_format\
-                    (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
-                     {"query": "node('system', name='system', role='leaf').out().node('rack', name='rack')"})
-
-    def bp_qe_post_system_role_spine(self, token, bp_id, address):
-        return self.request_post_format\
-                    (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
-                     {"query": "node('system', name='system', role='spine')"})
-
-    def bp_qe_post_system_role_spineleaf(self, token, bp_id, address):
-        return self.request_post_format\
-                    (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
-                     {"query": "node('system', name='system', role=is_in(['leaf', 'spine']))"})
-
-    def bp_qe_post_system_role_spineleafl2l3server(self, token, bp_id, address):
-        return self.request_post_format\
-                    (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
-                     {"query": "node('system', name='system', role=is_in(['leaf', 'spine', 'l2_server', 'l3_server']))"})
-
-    def bp_qe_post_system_systemtype_server(self, token, bp_id, address):
-        return self.request_post_format\
-                    (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe',
-                     {"query": "node('system', name='system', system_type='server')"})
+    def bp_racks_get(self, token, bp_id, address):
+        return self.request_get_format(token, bp_id, address, '/api/blueprints/{blueprint_id}/racks')
 
     def bp_security_zone_get(self, token, bp_id, address):
         return self.request_get_format(token, bp_id, address, '/api/blueprints/{blueprint_id}/security-zones')
-
-    def bp_racks_get(self, token, bp_id, address):
-        return self.request_get_format(token, bp_id, address, '/api/blueprints/{blueprint_id}/racks')
 
     def packages_get(self, token, bp_id, address):
         return self.request_get_format(token, bp_id, address, '/api/packages')

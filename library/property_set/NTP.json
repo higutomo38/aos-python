@@ -1,0 +1,6 @@
+{
+    "label": "NTP",
+    "values": {
+      "ntp_servers": "10.1.2.1, 10.1.2.2"
+    }
+}

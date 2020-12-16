@@ -25,7 +25,8 @@ class GetNosConfig(object):
         Save NOS configs of spine and leaf on local as zip file.
         """
         os.makedirs('./nos_config', exist_ok=True)
-        for system in AosApi().bp_qe_post_system_role_spineleaf(token, bp_id, address)['items']:
+        for system in AosApi().bp_qe_post(token, bp_id, address, \
+                  "node('system', name='system', role=is_in(['leaf', 'spine']))")['items']:
             url = 'https://' + address \
                   + '/api/blueprints/{blueprint_id}/nodes/{node_id}/config-rendering'\
                   .format(blueprint_id = bp_id, node_id = system['system']['id'])

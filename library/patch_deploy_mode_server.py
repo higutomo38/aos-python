@@ -26,7 +26,8 @@ class PatchDeployMode(object):
         input_mode = input('deploy_mode:')
         if input_mode in shared.deploy_mode:
             payload = {'nodes': {}}
-            for system in AosApi().bp_qe_post_system_systemtype_server(token, bp_id, address)['items']:
+            for system in AosApi().bp_qe_post(token, bp_id, address, \
+                           "node('system', name='system', system_type='server')")['items']:
                 payload['nodes'][system['system']['id']] = {'deploy_mode': input_mode}
             requests.patch('https://' + address + '/api/blueprints/{blueprint_id}'\
                            .format(blueprint_id = bp_id),

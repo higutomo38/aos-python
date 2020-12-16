@@ -1,0 +1,7 @@
+system {
+ntp {
+    {% for server in ntp_servers.split(',') %}
+    server {{server}};
+    {% endfor %}
+    }
+}

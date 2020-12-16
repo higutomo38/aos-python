@@ -1,0 +1,9 @@
+routing-instances {
+    {{vrf_name}} {
+        routing-options {
+            static {
+                route {{destination_prefix}} next-hop {{nexthop}};
+            }
+        }
+    }
+}
