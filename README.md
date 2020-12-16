@@ -49,7 +49,7 @@ e.g. python get_hostname.py 192.168.1.1 'blue print'
 First of all you get current hostname list as CSV. 
 
 ```
-$ python get_hostname.py 
+$ python get_hostname.py 192.168.1.1 blueprint_name
 ```
 
 You can see 'hostname_label.csv' on same directory you run the script.
@@ -63,7 +63,7 @@ ex.'hostname_label.csv'<br>
 <img src="https://user-images.githubusercontent.com/21299310/75225362-cf990880-57ed-11ea-9849-f71f4fea706e.png" width="640px">
 
 ```
-$ python patch_hostname.py 
+$ python patch_hostname.py 192.168.1.1 blueprint_name
 ```
 
 Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br> 
@@ -73,7 +73,7 @@ Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br>
 The procedure is same as hostname. Add new labels in culumn 'new_hostname or label' and save the CSV.<br> 
 
 ```
-$ python patch_label.py
+$ python patch_label.py 192.168.1.1 blueprint_name
 ```
 
 ### **Change deploy mode (Server)**
@@ -87,14 +87,14 @@ $ python patch_deploy_mode_server.py
 All rendered NOS configs got saved on local. The script create 'nos_config' directory and zip it up.<br> 
 
 ```
-$ python get_nos_config.py
+$ python get_nos_config.py 192.168.1.1 blueprint_name
 ```
 
 ### **Post virtual network based on server hostname**
 Switch ports go selecting automatically based server hostname when add virtual network.
 
 ```
-$ python post_vn_based_server_name.py
+$ python post_vn_based_server_name.py 192.168.1.1 blueprint_name
 AOS Login
 ID:
 Password:
@@ -114,7 +114,7 @@ Enter Server Hostname or "No": no
 ## **Configlets**
 ### **Sample Configlets and Property-Set for Junos**
 ```
-$ python post_configlets.py
+$ python post_configlets.py 192.168.1.1 blueprint_name
 ```
 You should edit both contents 'vrf name', 'prefix', 'ntp server' and so on after running the script.
 
