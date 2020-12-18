@@ -19,11 +19,11 @@ class PostConfiglets(object):
 
     def post_property_sets(self):
         """
-
+        Read json contents from directory 'property_set'.
+        Post property_set to global catalog.
         """
         for file in glob('property_set/*.json'):
             with open(file, 'r') as f:
-                # print (f.read())
                 requests.post('https://' + address + '/api/property-sets',
                               headers = {'AUTHTOKEN': token,
                                          'Content-Type': 'application/json'},
@@ -33,7 +33,7 @@ class PostConfiglets(object):
         """
         Get filename, contents from directory 'configlets'.
         Make configlet template text.
-        Post the configlet.
+        Post configlet to global catalog.
         """
         for file in glob('configlets/*.json'):
             with open(file, 'r') as f:
