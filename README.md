@@ -29,7 +29,7 @@ python post_iba_probe.py 192.168.1.1 blueprint_name aos-dev-sdk-462.zip
 ```
 
 Use single quotation if blueprint name includes blank.<br>
-e.g. python get_hostname.py 192.168.1.1 'blue print'
+e.g. python get_hostname.py 192.168.1.1 'blueprint tomoyuki'
 
 ## **Modules**
 
@@ -41,16 +41,15 @@ e.g. python get_hostname.py 192.168.1.1 'blue print'
 |  | patch_label.py | Change labels listed in CSV | All |
 |  | patch_deploy_mode_server.py | Change deploy mode | Server |
 |  | post_vn_based_server_name.py | Post virtual network based on server hostname. Switch ports go selecting automatically. | All |
-| IBA | post_iba_probe.py | Create all probes without AOS-CLI | All |
-
-
+| Configlets | post_configlets.py | Samples of configlets with Jinja and Property-set | Junos |
+| IBA | post_iba_probe.py | Create all probes without AOS-CLI | Except Junos |
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
 First of all you get current hostname list as CSV. 
 
 ```
-$ python get_hostname.py 
+$ python get_hostname.py 192.168.1.1 blueprint_name
 ```
 
 You can see 'hostname_label.csv' on same directory you run the script.
@@ -64,7 +63,7 @@ ex.'hostname_label.csv'<br>
 <img src="https://user-images.githubusercontent.com/21299310/75225362-cf990880-57ed-11ea-9849-f71f4fea706e.png" width="640px">
 
 ```
-$ python patch_hostname.py 
+$ python patch_hostname.py 192.168.1.1 blueprint_name
 ```
 
 Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br> 
@@ -74,28 +73,28 @@ Check 'Physical Diff' tab in 'uncommited' on AOS and then push 'commit'.<br>
 The procedure is same as hostname. Add new labels in culumn 'new_hostname or label' and save the CSV.<br> 
 
 ```
-$ python patch_label.py
+$ python patch_label.py 192.168.1.1 blueprint_name
 ```
 
 ### **Change deploy mode (Server)**
 You can monitor Leaf interfaces up/down facing server without aos agent when turn deploy mode of servers on.<br> 
 
 ```
-$ python patch_deploy_mode_server.py
+$ python patch_deploy_mode_server.py 192.168.1.1 blueprint_name
 ```
 
 ### **Save NOS configs on local (Spine and Leaf)**
 All rendered NOS configs got saved on local. The script create 'nos_config' directory and zip it up.<br> 
 
 ```
-$ python get_nos_config.py
+$ python get_nos_config.py 192.168.1.1 blueprint_name
 ```
 
 ### **Post virtual network based on server hostname**
 Switch ports go selecting automatically based server hostname when add virtual network.
 
 ```
-$ python post_vn_based_server_name.py
+$ python post_vn_based_server_name.py 192.168.1.1 blueprint_name
 AOS Login
 ID:
 Password:
@@ -112,6 +111,12 @@ Enter Server Hostname or "No": evpn-mlag-001-server003
 Enter Server Hostname or "No": no
 --- Target Server List: ['evpn-mlag-001-server001', 'evpn-mlag-001-server002', 'evpn-mlag-001-server003']
 ```
+## **Configlets**
+### **Sample Configlets and Property-Set for Junos**
+```
+$ python post_configlets.py 192.168.1.1 blueprint_name
+```
+You should edit both contents 'vrf name', 'prefix', 'ntp server' and so on after running the script.
 
 ## **IBA**
 ### **Create all probes without AOS-CLI**
@@ -134,7 +139,7 @@ Run 'post_iba_probe.py' putting the zip file name behind blueprint.<br>
 
 e.g.<br>
 ```
-python post_iba_probe.py 192.168.1.1 'tomo pod1' aos-dev-sdk-462.zip
+python post_iba_probe.py 192.168.1.1 'tomoyuki pod1' aos-dev-sdk-462.zip
 AOS Login
 ID:admin
 Password:
