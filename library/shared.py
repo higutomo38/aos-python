@@ -57,7 +57,8 @@ class LoginBlueprint(object):
         aos_response = requests.get(url,
                 headers = {'AUTHTOKEN': token, 'Content-Type': 'application/json'},
                 verify = False).json()
-        if aos_response['items'][0]['label'] == sys.argv[2]:
+        bp_list = [ bp['label'] for bp in aos_response['items']]
+        if sys.argv[2] in bp_list:
             return token, aos_response['items'][0]['id'], sys.argv[1]
         else:
             print ('----- Error:Blueprint name -----')
