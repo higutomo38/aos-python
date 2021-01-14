@@ -40,6 +40,7 @@ e.g. python get_hostname.py 192.168.1.1 'blueprint tomoyuki'
 |  | patch_hostname.py | Change hostnames listed in CSV | All |
 |  | patch_label.py | Change labels listed in CSV | All |
 |  | patch_deploy_mode_server.py | Change deploy mode | Server |
+|  | post_vn.py | Post virtual network using CSV | Junos |
 |  | post_vn_based_server_name.py | Post virtual network based on server hostname. Switch ports go selecting automatically. | All |
 | Configlets | post_configlets.py | Samples of configlets with Jinja and Property-set | Junos |
 | IBA | post_iba_probe.py | Create all probes without AOS-CLI | Except Junos |
@@ -88,6 +89,14 @@ All rendered NOS configs got saved on local. The script create 'nos_config' dire
 
 ```
 $ python get_nos_config.py 192.168.1.1 blueprint_name
+```
+
+### **Post virtual network using CSV**
+Write down virtual network arguments in 'post_vn.csv'<br>
+<img src="https://user-images.githubusercontent.com/21299310/104560263-fae84880-5688-11eb-9a08-3f7ddbe25007.png" width="640px">
+
+```
+$ python post_vn.py 192.168.1.1 blueprint_name
 ```
 
 ### **Post virtual network based on server hostname**
