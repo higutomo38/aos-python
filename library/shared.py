@@ -117,6 +117,10 @@ class AosApi(object):
         return self.request_post_format \
             (token, bp_id, address, '/api/blueprints/{blueprint_id}/qe', {"query": qe})
 
+    def bp_vn_post(self, token, bp_id, address, vn):
+        return self.request_post_format \
+            (token, bp_id, address, '/api/blueprints/{blueprint_id}/virtual-networks', vn)
+
     def bp_racks_get(self, token, bp_id, address):
         return self.request_get_format(token, bp_id, address, '/api/blueprints/{blueprint_id}/racks')
 

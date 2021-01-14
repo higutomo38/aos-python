@@ -12,6 +12,8 @@ token = token_bp_id_address[0]
 bp_id = token_bp_id_address[1]
 address = token_bp_id_address[2]
 
+token_bp_id_address = LoginBlueprint()
+
 class PostConfiglets(object):
 
     def __init__(self):
