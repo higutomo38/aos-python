@@ -92,7 +92,7 @@ $ python get_nos_config.py 192.168.1.1 blueprint_name
 ```
 
 ### **Post virtual network using CSV**
-Write down virtual network arguments in 'post_vn.csv'<br>
+Write down virtual network arguments in 'post_vn.csv'.<br>
 <img src="https://user-images.githubusercontent.com/21299310/104560263-fae84880-5688-11eb-9a08-3f7ddbe25007.png" width="640px">
 
 ```
