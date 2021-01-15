@@ -94,7 +94,7 @@ $ python get_nos_config.py 192.168.1.1 blueprint_name
 ### **Post virtual network using CSV**
 Create 'post_vn.csv' on your local and write virtual network arguments to it referring to following.<br>
 Note. The directory mounted to container '/tmp/aos-python/library/csv'.<br>
-<img src="https://user-images.githubusercontent.com/21299310/104560263-fae84880-5688-11eb-9a08-3f7ddbe25007.png" width="640px">
+<img src="https://user-images.githubusercontent.com/21299310/104737018-10dc3300-5787-11eb-823d-657921bae4bd.png" width="640px">
 
 ```
 $ python post_vn.py 192.168.1.1 blueprint_name
