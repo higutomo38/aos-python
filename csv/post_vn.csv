@@ -1,3 +1,0 @@
-"Label	",VN_Type,VN ID,VLAN ID,IPv4 Subnet,VG IPv4,DHCP Service,Security Zone,Leaf Hostname,Default Tag Type
-vlan301,vxlan,10301,301,10.0.1.0/24,10.0.1.1,dhcpServiceEnabled,blue,"leaf1,leaf2,leaf3",unassigned
-vlan302,vxlan,10302,302,10.0.2.0/24,10.0.2.1,dhcpServiceEnabled,blue,leaf3,vlan_tagged
