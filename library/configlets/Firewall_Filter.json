@@ -1,0 +1,25 @@
+{% set ff = {
+    'term_1':['blue', '10.1.1.0/25', '10.1.2.0/25'],
+    'term_2':['red', '10.1.1.128/25', '10.1.2.128/25'],
+    } %}
+firewall {
+    family inet {
+        filter FW-FBF {
+			{% for term, vrf_srcips in ff.items() %}
+            term {{term}} {
+                from {
+                    source-address {
+                        {% for srcip in vrf_srcips[1:] %}
+                        {{srcip}};
+                        {% endfor %}
+                    }
+                }
+            then {
+                count {{term}}
+                routing-instance {{vrf_srcips[0]}}
+          }
+			}
+			{% endfor %}
+		}
+	}
+}
