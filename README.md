@@ -43,7 +43,7 @@ e.g. python get_hostname.py 192.168.1.1 'blueprint tomoyuki'
 |  | post_vn.py | Post virtual network using CSV | Junos |
 |  | post_vn_based_server_name.py | Post virtual network based on server hostname. Switch ports go selecting automatically. | Except Junos |
 | Configlets | post_configlets.py | Samples of configlets with Jinja and Property-set | Junos |
-| IBA | post_iba_probe.py | Create all probes without AOS-CLI | Except Junos |
+| IBA | post_iba_probe.py | Create all probes without AOS-CLI | Except NXOS |
 
 ## **Blueprint**
 ### **Change Hostname (Spine, Leaf and Server)**
