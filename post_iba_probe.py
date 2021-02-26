@@ -50,33 +50,28 @@ class PostIbaProbes(object):
             'job state' == 'success'
             'operation mode' == 'full_control'
         """
-        def prosecutor(self):
-            payload = {'packages': package.split(), 'operation_mode': 'full_control'}
-            resp = requests.patch(
-                'https://' + address + '/api/system-agents/' + agent['id'],
-                headers={'AUTHTOKEN': token, 'Content-Type': 'application/json'},
-                data=json.dumps(payload), verify=False)
-            if str(resp.status_code) == '202':
-                print('----- Installing on ' + agent['device_facts']['hostname'])
-            else:
-                print('----- Error: Request is not accepted on ' + agent['device_facts']['hostname'])
-                sys.exit()
         print('##### Install Package to Agents #####')
         agent_id_list = []
         package_list = [package['name'] for package in AosApi().packages_get(token, bp_id, address)['items']]
         for agent in AosApi().system_agents_get(token, bp_id, address)['items']:
-            # For Onbox Agent
             if agent['running_config']['agent_type'] == 'onbox':
-                if agent['status']['operation_mode'] == 'full_control' and agent['status']['state'] == 'success':
-                    for package in package_list:
-                        if agent['status']['platform'] in package:
-                            prosecutor(self)
-            # For Offbox Agent
+
             elif agent['running_config']['agent_type'] == 'offbox':
-                if agent['status']['operation_mode'] == 'full_control' and agent['status']['connection_state'] == 'connected':
-                    for package in package_list:
-                        if agent['platform_status']['platform'] in package:
-                            prosecutor(self)
+            if (agent['status']['operation_mode'] == 'full_control' and agent['status']['state'] == 'success') \
+                or (agent['status']['operation_mode'] == 'full_control' and agent['status']['connection_state'] == 'connected'):
+                for package in package_list:
+                    if agent['status']['platform'] in package:
+                        payload = {'packages': package.split(), 'operation_mode': 'full_control'}
+                        resp = requests.patch('https://' + address + '/api/system-agents/' + agent['id'],
+                                              headers={'AUTHTOKEN': token, 'Content-Type': 'application/json'},
+                                              data=json.dumps(payload), verify=False)
+                        if str(resp.status_code) == '202':
+                            print('----- Request has been accepted for processing on '
+                                  + agent['device_facts']['hostname'])
+                        else:
+                            print ('----- Error: Request is not accepted on '
+                                   + agent['device_facts']['hostname'])
+                            sys.exit()
             agent_id_list.append(agent['id'])
         time.sleep(5)
         """
@@ -84,7 +79,7 @@ class PostIbaProbes(object):
         """
         while len(agent_id_list) != 0:
             system_agents = AosApi().system_agents_id_get(token, bp_id, address, agent_id_list[0])
-            for package in system_agents['running_config']['packages']:
+            for package in system_agents['telemetry_ext_status']['packages_installed']:
                 if 'aosstdcollectors-custom' in package:
                     agent_id_list.remove(agent_id_list[0])
                     print ('----- Package installed on ' + system_agents['device_facts']['hostname'])
@@ -172,8 +167,8 @@ class PostIbaProbes(object):
 
 
 if __name__ == '__main__':
-    PostIbaProbes().post_package()
+    # PostIbaProbes().post_package()
     PostIbaProbes().install_package()
-    PostIbaProbes().install_service_registry()
-    PostIbaProbes().create_probe()
+    # PostIbaProbes().install_service_registry()
+    # PostIbaProbes().create_probe()
 
