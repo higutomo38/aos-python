@@ -56,7 +56,7 @@ class PostVN(object):
         :return :Post virtual networks
         """
         dict_set = PostVN.leaf_dict(self)
-        with open('./csv/post_vn.csv', 'r') as file:
+        with open('./tmp/post_vn.csv', 'r') as file:
             reader = csv.reader(file)
             next(reader)
             for line in reader:
