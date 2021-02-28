@@ -137,7 +137,6 @@ class PostIbaProbes(object):
             for schema_path in iba_storage_schema_path.items():
                 if json_file.replace('.json', '') in schema_path[1]:
                     payload['storage_schema_path'] = 'aos.sdk.telemetry.schemas.' + schema_path[0]
-                    # break
                     resp = requests.post('https://' + address + '/api/telemetry-service-registry',
                                          headers={'AUTHTOKEN': token,
                                                   'Content-Type': 'application/json'},
@@ -172,8 +171,8 @@ class PostIbaProbes(object):
 
 
 if __name__ == '__main__':
-    PostIbaProbes().post_package()
-    PostIbaProbes().install_package()
-    PostIbaProbes().install_service_registry()
+    # PostIbaProbes().post_package()
+    # PostIbaProbes().install_package()
+    # PostIbaProbes().install_service_registry()
     PostIbaProbes().create_probe()
 
