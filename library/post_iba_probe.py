@@ -27,7 +27,7 @@ class PostIbaProbes(object):
         """
         Unzip AosDev SDK, upload whl_file to AOS one by one.
         """
-        with ZipFile('./tmp/' + sys.argv[3]) as myzip: myzip.extractall()
+        with ZipFile('./files/' + sys.argv[3]) as myzip: myzip.extractall()
         whl_file_list = [os.path.basename(whl_file) for whl_file in \
                          glob.glob('./dist/aosstdcollectors_custom_*.whl')]
         print ('##### Upload IBA Custom Collectors #####')
