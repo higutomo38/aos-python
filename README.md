@@ -9,14 +9,14 @@ AOS 3.3.0
 Run the docker repo.
 
 ```
-docker run --name aos-python -it -w /tmp/aos-python/library -v "$(pwd)"/:/tmp/aos-python/library/csv higutomo38/aos-python:latest /bin/bash
+docker run --name aos-python -it -w /tmp/aos-python/library -v "$(pwd)"/:/tmp/aos-python/library/files higutomo38/aos-python:latest /bin/bash
 ```
 
-Get latest AOS SDK from Apstra client portal and copy it to the container path "/tmp/aos-python/library"<br>
+Get latest AOS SDK from Apstra client portal and copy it to the container path "/tmp/aos-python/library/files"<br>
 (Note: Skip this step if you don't use 'post_iba_probe.py')
 
 ```
-docker cp ./aos-dev-sdk-462.zip aos-python:/tmp/aos-python/library
+docker cp ./aos-dev-sdk-462.zip aos-python:/tmp/aos-python/library/files
 ```
 
 Run python file using AOS server FQDN / IP address, blueprint name and AOS SDK.<br>
